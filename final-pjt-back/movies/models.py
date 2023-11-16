@@ -23,11 +23,18 @@ class Director(models.Model):
     profile_path = models.TextField(blank=True)
 
 
+class WatchProvider(models.Model):
+    name = models.TextField()
+    log_img = models.ImageField(blank=True)
+    url = models.TextField()
+
+
 class Movie(models.Model):
     id = models.IntegerField(primary_key=True)
     genres = models.ManyToManyField(Genre)
     actors = models.ManyToManyField(Actor)
     directors = models.ManyToManyField(Director)
+    watch_providers = models.ManyToManyField(WatchProvider)
     title = models.TextField()
     original_title = models.TextField()
     certification = models.TextField(blank=True)    # 심의등급
