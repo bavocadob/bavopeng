@@ -23,6 +23,11 @@ class Director(models.Model):
     profile_path = models.TextField(blank=True)
 
 
+class WatchProvider(models.Model):
+    name = models.TextField()
+    url = models.TextField()
+
+
 class Movie(models.Model):
     id = models.IntegerField(primary_key=True)
     genres = models.ManyToManyField(Genre)
