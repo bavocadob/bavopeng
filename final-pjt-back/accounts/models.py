@@ -16,6 +16,7 @@ class User(AbstractUser):
     followings = models.ManyToManyField('self', symmetrical=False, related_name='followers')
     likes_movies = models.ManyToManyField(Movie, related_name='liked_users')
     dislikes_movies = models.ManyToManyField(Movie, related_name='disliked_users')
+    wishes_movies = models.ManyToManyField(Movie, related_name='wished_users')
     likes_reviews = models.ManyToManyField(Review, related_name='liked_users')
     likes_articles = models.ManyToManyField(Article, related_name='liked_users')
     dislikes_articles = models.ManyToManyField(Article, related_name='disliked_users')
