@@ -11,13 +11,11 @@ class CustomRegisterSerializer(RegisterSerializer):
         allow_blank=True,
         max_length=255
     )
-    age = serializers.IntegerField(required=False)
 
     def get_cleaned_data(self):
         return {
             'username': self.validated_data.get('username', ''),
             'password1': self.validated_data.get('password1', ''),
-            'age': self.validated_data.get('age', ''),
             'nickname': self.validated_data.get('nickname', ''),
         }
     

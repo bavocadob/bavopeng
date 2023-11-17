@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.core.exceptions import ValidationError
 
 # Create your models here.
 class Genre(models.Model):
@@ -42,8 +41,8 @@ class Movie(models.Model):
     release_date = models.DateField()               # 개봉일
     runtime = models.IntegerField()
     tagline = models.TextField(blank=True)          # 한 줄 설명
-    poster_path = models.TextField(blank=True, null=True)
-    backdrop_path = models.TextField(blank=True, null=True)
+    poster_path = models.TextField(blank=True)
+    backdrop_path = models.TextField(blank=True)
     trailer = models.TextField(blank=True)
 
 
