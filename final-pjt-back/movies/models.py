@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.core.exceptions import ValidationError
 
 # Create your models here.
 class Genre(models.Model):
@@ -23,11 +22,18 @@ class Director(models.Model):
     profile_path = models.TextField(blank=True)
 
 
+class WatchProvider(models.Model):
+    name = models.TextField()
+    log_img = models.ImageField(blank=True)
+    url = models.TextField()
+
+
 class Movie(models.Model):
     id = models.IntegerField(primary_key=True)
     genres = models.ManyToManyField(Genre)
     actors = models.ManyToManyField(Actor)
     directors = models.ManyToManyField(Director)
+    watch_providers = models.ManyToManyField(WatchProvider)
     title = models.TextField()
     original_title = models.TextField()
     certification = models.TextField(blank=True)    # 심의등급
@@ -35,9 +41,11 @@ class Movie(models.Model):
     release_date = models.DateField()               # 개봉일
     runtime = models.IntegerField()
     tagline = models.TextField(blank=True)          # 한 줄 설명
-    poster_path = models.TextField(blank=True, null=True)
-    backdrop_path = models.TextField(blank=True, null=True)
+    poster_path = models.TextField(blank=True)
+    backdrop_path = models.TextField(blank=True)
     trailer = models.TextField(blank=True)
+    rating_avg = models.FloatField(default=0)
+    rating_cnt = models.IntegerField(default=0)
 
 
 class Review(models.Model):
@@ -45,8 +53,9 @@ class Review(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.CharField(max_length=500)
     rating = models.IntegerField(
+        default=0,
         validators=[
-            MinValueValidator(0),
+            MinValueValidator(1),
             MaxValueValidator(10),
         ])
     created_at = models.DateTimeField(auto_now_add=True)
