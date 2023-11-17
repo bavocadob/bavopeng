@@ -16,11 +16,14 @@ def article_list(request):
         serializer = ArticleListSerializer(articles, many=True)
         return Response(serializer.data)
 
-    elif request.method == 'POST':
+    elif request.user.is_authenticated and request.method == 'POST':
         serializer = ArticleSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    else:
+        return Response(status=status.HTTP_403_FORBIDDEN)
         
 
 # 단일 게시글 조회, 수정, 삭제
@@ -32,23 +35,19 @@ def article_detail(request, article_pk):
         serializer = ArticleSerializer(article)
         return Response(serializer.data)
     
-    elif request.user.is_authenticated:
-        if request.user == article.user:
-            if request.method == 'PUT':
-                serializer = ArticleSerializer(article, data=request.data, partial=True)
-                if serializer.is_valid(raise_exception=True):
-                    serializer.save()
-                    return Response(serializer.data)
-            
-            elif request.method == 'DELETE':
-                article.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            data = {'message': '권한이 없습니다.'}
-            return Response(data, status=status.HTTP_403_FORBIDDEN)
+    elif request.user.is_authenticated and request.user == article.user:
+        if request.method == 'PUT':
+            serializer = ArticleSerializer(article, data=request.data, partial=True)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data)
+        
+        elif request.method == 'DELETE':
+            article.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
     else:
-        data = {'message': '유효한 인증자격이 없습니다.'}
-        return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+        data = {"detail": "Authentication credentials were not provided."}
+        return Response(data, status=status.HTTP_403_FORBIDDEN)
     
 
 # 댓글 생성
@@ -71,20 +70,17 @@ def comment_detail(request, article_pk, comment_pk):
         serializer = CommentSerializer(comment)
         return Response(serializer.data)
     
-    elif request.user.is_authenticated:
-        if request.user == comment.user:
-            if request.method == 'PUT':
-                serializer = CommentSerializer(comment, request.data)
-                if serializer.is_valid(raise_exception=True):
-                    serializer.save()
-                    return Response(serializer.data)
-            
-            elif request.method == 'DELETE':
-                comment.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            data = {'message': '권한이 없습니다.'}
-            return Response(data, status=status.HTTP_403_FORBIDDEN)
+    elif request.user.is_authenticated and request.user == comment.user:
+        if request.method == 'PUT':
+            serializer = CommentSerializer(comment, request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data)
+        
+        elif request.method == 'DELETE':
+            comment.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        
     else:
-        data = {'message': '유효한 인증자격이 없습니다.'}
-        return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+        data = {"detail": "Authentication credentials were not provided."}
+        return Response(data, status=status.HTTP_403_FORBIDDEN)
