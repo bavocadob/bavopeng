@@ -5,12 +5,14 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 
 from .serializers import GenreSerializer
-from .models import Genre, Movie, Actor, Director, Review
+from .models import Genre, Movie, Actor, Director, Review, WatchProvider
 from .serializers import MovieSerializer, ReviewSerializer
 import requests
 import re
@@ -94,6 +96,19 @@ def insert_movies(request):
                 director = create_people(crew['id'], 'director')
             movie_obj.directors.add(director)
 
+    def add_providers(movie_obj, providers:dict):
+        flatrates = providers.setdefault('KR', dict()).setdefault('flatrate', dict())
+        if not flatrates:
+            return
+        
+        for flatrate in flatrates:
+            try:
+                watch_provider = WatchProvider.objects.get(pk=flatrate['provider_id'])
+                movie_obj.watch_providers.add(watch_provider)
+            except ObjectDoesNotExist:
+                continue
+
+        
 
 
     # page = range(1, 501)
@@ -115,8 +130,8 @@ def insert_movies(request):
     response = requests.get(BASE_URL, params=params).json()
     
     # 검색한 조건의 페이지 개수만큼, 페이지 1씩 올려가면서 api 요청
-    # for page in range(1, response['total_pages'] + 1):
-    for page in range(300, 311):
+    for page in range(147, response['total_pages'] + 1):
+    # for page in range(34, 311):
         params['page'] = page
 
         response = requests.get(BASE_URL, params=params).json()
@@ -125,6 +140,9 @@ def insert_movies(request):
 
         for movie in movies:    # 영화 리스트를 순회
             movie_id = movie['id']  # 개별영화의 ID
+            if Movie.objects.filter(id=movie_id).exists():
+                continue
+
             DETAIL_URL = f'https://api.themoviedb.org/3/movie/{movie_id}'
             detail_response = requests.get(DETAIL_URL, params=detail_params).json()
 
@@ -142,10 +160,38 @@ def insert_movies(request):
             add_genres(movie_obj, detail_response['genres'])
             add_actors(movie_obj, detail_response['credits']['cast'])
             add_directors(movie_obj, detail_response['credits']['crew'])
+            add_providers(movie_obj, detail_response['watch/providers']['results'])
 
 
     return JsonResponse(response)
 
+
+def insert_watch_providers(request):
+    watch_providers = [
+        { 
+            'id': 8,
+            'name': '넷플릭스',
+            'url': 'https://www.netflix.com/kr/',
+            'logo_img': '/t2yyOv40HZeVlLjYsCsPHnWLk4W.jpg',
+        },
+        { 
+            'id': 97,
+            'name': '왓챠',
+            'url': 'https://watcha.com/',
+            'logo_img': '/vXXZx0aWQtDv2klvObNugm4dQMN.jpg',
+        },
+        { 
+            'id': 337,
+            'name': '디즈니 플러스',
+            'url': 'https://www.disneyplus.com/ko-kr',
+            'logo_img': '/7rwgEs15tFwyR9NPQ5vpzxTj19Q.jpg',
+        },
+   ]
+    for provider in watch_providers:
+        watch_provider = WatchProvider.objects.create(**provider)
+        watch_provider.save()
+    
+    return JsonResponse(watch_providers)
 
 
 def insert_genres(request):
@@ -268,6 +314,35 @@ def movie_review(request, movie_pk):
         reviews = movie.review_set.all()
         serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data)
+    
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def movie_like(request, movie_pk):
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    user = request.user
+
+    if request.method == 'POST':
+        if movie.liked_users.filter(pk=user.pk).exists():
+            movie.liked_users.remove(user)
+        else:
+            movie.liked_users.add(user)
+        return Response(status=status.HTTP_200_OK)
+
+            
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def movie_dislike(request, movie_pk):
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    user = request.user
+
+    if request.method == 'POST':
+        if movie.disliked_users.filter(pk=user.pk).exists():
+            movie.liked_users.remove(user)
+        else:
+            movie.liked_users.add(user)
+        return Response(status=status.HTTP_200_OK)            
+    
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -291,4 +366,6 @@ def movie_review_detail(request, movie_pk, review_pk):
         return Response(status=status.HTTP_403_FORBIDDEN)
 
 
-
+@permission_classes([IsAuthenticated])
+def movie_review_like(request, movie_pk, review_pk):
+    pass
