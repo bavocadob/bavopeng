@@ -26,7 +26,7 @@ class ArticleListSerializer(serializers.ModelSerializer):
             model = Comment
             fields = ('id',)
 
-    # comment_set = CommentSerializer(many=True, read_only=True)    # 선언을 안해도 source는 가지고 올 수 있는 건가?
+    # comment_set = CommentSerializer(many=True, read_only=True)
     comment_cnt = serializers.IntegerField(source='comment_set.count', read_only=True)
     user = UserSimpleSerializer(read_only=True)
     
