@@ -44,6 +44,8 @@ class Movie(models.Model):
     poster_path = models.TextField(blank=True)
     backdrop_path = models.TextField(blank=True)
     trailer = models.TextField(blank=True)
+    rating_avg = models.FloatField(default=0)
+    rating_cnt = models.IntegerField(default=0)
 
 
 class Review(models.Model):
@@ -51,8 +53,9 @@ class Review(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.CharField(max_length=500)
     rating = models.IntegerField(
+        default=0,
         validators=[
-            MinValueValidator(0),
+            MinValueValidator(1),
             MaxValueValidator(10),
         ])
     created_at = models.DateTimeField(auto_now_add=True)
