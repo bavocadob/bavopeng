@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from allauth.account.adapter import DefaultAccountAdapter
 from movies.models import Movie, Review
 from articles.models import Article, Comment
@@ -65,6 +67,17 @@ class Profile(models.Model):
     likes_articles = models.ManyToManyField(Article, related_name='liked_users')
     dislikes_articles = models.ManyToManyField(Article, related_name='disliked_users')
     likes_comments = models.ManyToManyField(Comment, related_name='liked_users')
+    nickname = models.CharField(max_length=255, unique=True)
     profile_img = models.ImageField(blank=True, upload_to=user_directory_path)
     introduce = models.CharField(max_length=250, blank=True)
-    nickname = models.CharField(max_length=255, unique=True)
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance, nickname=instance.username)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
