@@ -11,12 +11,10 @@ from articles.models import Article, Comment
 class User(AbstractUser):
     
 
+    followings = models.ManyToManyField('self', symmetrical=False, related_name='followers')
     username = models.CharField(max_length=30, unique=True)
     # nickname = models.CharField(max_length=255, unique=True)
     email = models.EmailField(max_length=254, blank=True, null=True)
-
-    
-
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -56,10 +54,9 @@ class CustomAccountAdapter(DefaultAccountAdapter):
 
 class Profile(models.Model):
     def user_directory_path(instance, filename):
-        return f'user_{instance.user.id}'
+        return f'profile/{instance.user.username}/{filename}'
     
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    followings = models.ManyToManyField('self', symmetrical=False, related_name='followers')
     nickname = models.CharField(max_length=255, unique=True)
     profile_img = models.ImageField(blank=True, upload_to=user_directory_path)
     introduce = models.CharField(max_length=250, blank=True)
