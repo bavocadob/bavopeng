@@ -27,7 +27,7 @@ class Director(models.Model):
 
 class WatchProvider(models.Model):
     name = models.TextField()
-    log_img = models.ImageField(blank=True)
+    logo_img = models.ImageField(blank=True)
     url = models.TextField()
 
 

@@ -1,0 +1,29 @@
+[
+{
+    "model": "movies.watchprovider",
+    "pk": 8,
+    "fields": {
+        "name": "넷플릭스",
+        "logo_img": "/t2yyOv40HZeVlLjYsCsPHnWLk4W.jpg",
+        "url": "https://www.netflix.com/kr/"
+    }
+},
+{
+    "model": "movies.watchprovider",
+    "pk": 97,
+    "fields": {
+        "name": "왓챠",
+        "logo_img": "/vXXZx0aWQtDv2klvObNugm4dQMN.jpg",
+        "url": "https://watcha.com/"
+    }
+},
+{
+    "model": "movies.watchprovider",
+    "pk": 337,
+    "fields": {
+        "name": "디즈니 플러스",
+        "logo_img": "/7rwgEs15tFwyR9NPQ5vpzxTj19Q.jpg",
+        "url": "https://www.disneyplus.com/ko-kr"
+    }
+}
+]
