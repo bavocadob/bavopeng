@@ -60,7 +60,6 @@ class UserPreferenceSerializer(serializers.ModelSerializer):
             model = Article
             fields = ('id', 'title', 'user',)
 
-    followers = serializers.StringRelatedField(many=True, read_only=True)
     followings_cnt = serializers.IntegerField(source='followings.count', read_only=True)
     followers_cnt = serializers.IntegerField(source='followers.count', read_only=True)
     liked_movies = UserMoviePreferenceSerializer(many=True, read_only=True)
@@ -71,7 +70,7 @@ class UserPreferenceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('followings_cnt', 'followings', 'followers_cnt', 'followers', 
+        fields = ('id', 'followings_cnt', 'followers_cnt', 
                   'liked_movies', 'disliked_movies', 'wished_movies', 'liked_articles', 'disliked_articles')
 
 
@@ -81,7 +80,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = '__all__'
+        fields = ('nickname', 'user', 'profile_img', 'introduce',)
 
 
 # 프로필 수정
@@ -90,3 +89,16 @@ class ProfileFormSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ('id', 'user', 'nickname', 'profile_img', 'introduce',)
         read_only_fields = ('user',)
+        
+
+# 팔로잉, 팔로우 조회
+class UserFollowSerializer(serializers.ModelSerializer):
+    class ProfileSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Profile
+            fields = ('nickname', 'profile_img')
+    
+    profile = ProfileSerializer(read_only=True)
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'profile')
