@@ -92,3 +92,20 @@ def comment_detail(request, article_pk, comment_pk):
     else:
         data = {'detail': 'Authentication credentials were not provided.'}
         return Response(data, status=status.HTTP_403_FORBIDDEN)
+    
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def like_article(request, article_pk):
+    article = get_object_or_404(Article, pk=article_pk)
+
+    if request.method == 'POST' and not article.liked_by.filter(pk=request.user.pk).exists():
+        article.liked_by.add(request.user)
+        return Response(status=status.HTTP_201_CREATED)
+
+    elif request.method == 'DELETE' and article.liked_by.filter(pk=request.user.pk).exists():
+        article.liked_by.remove(request.user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)

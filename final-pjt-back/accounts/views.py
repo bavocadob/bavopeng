@@ -23,7 +23,7 @@ def profile(reqeust, username):
     
     elif reqeust.method == 'PUT':
         if reqeust.user.is_authenticated and reqeust.user.profile == profile:
-            serializer = ProfileFormSerializer(profile, data=reqeust.data, partial=True)
+            serializer = ProfileFormSerializer(profile, data=reqeust.data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(serializer.data)
