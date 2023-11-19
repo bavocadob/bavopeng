@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from django.shortcuts import get_object_or_404, get_list_or_404
 from .models import Article, Comment
-from .serializers import ArticleListSerializer, ArticleSerializer, CommentSerializer
+from .serializers import ArticleListSerializer, ArticleSerializer, ArticleFormSerializer, CommentSerializer, CommentFormSerializer
 
 # Create your views here.
 # 전체 게시글 조회, 게시글 생성
@@ -16,7 +16,7 @@ def article_list(request):
         return Response(serializer.data)
 
     elif request.user.is_authenticated and request.method == 'POST':
-        serializer = ArticleSerializer(data=request.data)
+        serializer = ArticleFormSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -29,7 +29,8 @@ def article_list(request):
 # 단일 게시글 조회, 수정, 삭제
 @api_view(['GET', 'PUT', 'DELETE'])
 def article_detail(request, article_pk):
-    article = get_object_or_404(Article, pk=article_pk)
+    # article = get_object_or_404(Article, pk=article_pk)
+    article = Article.objects.select_related('user', 'ref_movie').prefetch_related('comments__replies').get(pk=article_pk)
 
     if request.method == 'GET':
         serializer = ArticleSerializer(article)
@@ -37,7 +38,7 @@ def article_detail(request, article_pk):
     
     elif request.user.is_authenticated and request.user == article.user:
         if request.method == 'PUT':
-            serializer = ArticleSerializer(article, data=request.data, partial=True)
+            serializer = ArticleFormSerializer(article, data=request.data, partial=True)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(serializer.data)
@@ -56,9 +57,16 @@ def article_detail(request, article_pk):
 def comment_create(request, article_pk):
     if request.method == 'POST':
         article = get_object_or_404(Article, pk=article_pk)
-        serializer = CommentSerializer(data=request.data)
+        parent_comment_id = request.data.get('parent_comment_id')
+
+        if parent_comment_id: 
+            parent_comment = get_object_or_404(Comment, id=parent_comment_id)
+        else:
+            parent_comment = None
+
+        serializer = CommentFormSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.save(user=request.user, article=article)
+            serializer.save(user=request.user, article=article, parent_comment=parent_comment)
             return Response(serializer.data)
 
 
@@ -72,7 +80,7 @@ def comment_detail(request, article_pk, comment_pk):
     
     elif request.user.is_authenticated and request.user == comment.user:
         if request.method == 'PUT':
-            serializer = CommentSerializer(comment, request.data)
+            serializer = CommentFormSerializer(comment, request.data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(serializer.data)
