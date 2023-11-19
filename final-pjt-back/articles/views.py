@@ -22,7 +22,7 @@ def article_list(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     else:
-        data = {"detail": "Authentication credentials were not provided."}
+        data = {'detail': 'Authentication credentials were not provided.'}
         return Response(data, status=status.HTTP_403_FORBIDDEN)
         
 
@@ -30,7 +30,10 @@ def article_list(request):
 @api_view(['GET', 'PUT', 'DELETE'])
 def article_detail(request, article_pk):
     # article = get_object_or_404(Article, pk=article_pk)
-    article = Article.objects.select_related('user', 'ref_movie').prefetch_related('comments__replies').get(pk=article_pk)
+    try:
+        article = Article.objects.select_related('user', 'ref_movie').prefetch_related('comments__replies').get(pk=article_pk)
+    except:
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         serializer = ArticleSerializer(article)
@@ -47,7 +50,7 @@ def article_detail(request, article_pk):
             article.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
     else:
-        data = {"detail": "Authentication credentials were not provided."}
+        data = {'detail': 'Authentication credentials were not provided.'}
         return Response(data, status=status.HTTP_403_FORBIDDEN)
     
 
@@ -67,7 +70,7 @@ def comment_create(request, article_pk):
         serializer = CommentFormSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=request.user, article=article, parent_comment=parent_comment)
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 # 단일 댓글 조회, 수정, 삭제
@@ -90,5 +93,5 @@ def comment_detail(request, article_pk, comment_pk):
             return Response(status=status.HTTP_204_NO_CONTENT)
         
     else:
-        data = {"detail": "Authentication credentials were not provided."}
+        data = {'detail': 'Authentication credentials were not provided.'}
         return Response(data, status=status.HTTP_403_FORBIDDEN)
