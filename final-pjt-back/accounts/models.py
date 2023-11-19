@@ -57,7 +57,7 @@ class Profile(models.Model):
         return f'profile/{instance.user.username}/{filename}'
     
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    nickname = models.CharField(max_length=255, unique=True)
+    nickname = models.CharField(max_length=30, unique=True)
     profile_img = models.ImageField(blank=True, upload_to=user_directory_path)
     introduce = models.CharField(max_length=250, blank=True)
 
