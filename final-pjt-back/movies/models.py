@@ -3,6 +3,9 @@ from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Create your models here.
+User = settings.AUTH_USER_MODEL
+
+
 class Genre(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.TextField()
@@ -34,6 +37,9 @@ class Movie(models.Model):
     actors = models.ManyToManyField(Actor)
     directors = models.ManyToManyField(Director)
     watch_providers = models.ManyToManyField(WatchProvider)
+    liked_by = models.ManyToManyField(User, related_name='liked_movies')
+    disliked_by = models.ManyToManyField(User, related_name='disliked_movies')
+    wished_by = models.ManyToManyField(User, related_name='wished_movies')
     title = models.TextField()
     original_title = models.TextField()
     certification = models.TextField(blank=True)    # 심의등급
@@ -50,7 +56,8 @@ class Movie(models.Model):
 
 class Review(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    liked_by = models.ManyToManyField(User, related_name='liked_reviews')
     content = models.CharField(max_length=500)
     rating = models.IntegerField(
         default=0,

@@ -60,13 +60,6 @@ class Profile(models.Model):
     
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     followings = models.ManyToManyField('self', symmetrical=False, related_name='followers')
-    likes_movies = models.ManyToManyField(Movie, related_name='liked_users')
-    dislikes_movies = models.ManyToManyField(Movie, related_name='disliked_users')
-    wishes_movies = models.ManyToManyField(Movie, related_name='wished_users')
-    likes_reviews = models.ManyToManyField(Review, related_name='liked_users')
-    likes_articles = models.ManyToManyField(Article, related_name='liked_users')
-    dislikes_articles = models.ManyToManyField(Article, related_name='disliked_users')
-    likes_comments = models.ManyToManyField(Comment, related_name='liked_users')
     nickname = models.CharField(max_length=255, unique=True)
     profile_img = models.ImageField(blank=True, upload_to=user_directory_path)
     introduce = models.CharField(max_length=250, blank=True)
