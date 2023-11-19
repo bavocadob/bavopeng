@@ -1,22 +1,8 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
-from accounts.models import Profile
+# from django.contrib.auth import get_user_model
+# from accounts.models import Profile
+from accounts.serializers import UserProfileSerializer
 from .models import Article, Comment
-
-
-User = get_user_model()
-
-
-class UserProfileSerializer(serializers.ModelSerializer):
-    class ProfileSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = Profile
-            fields = ('nickname', 'profile_img',)
-    
-    profile = ProfileSerializer(read_only=True)
-    class Meta:
-        model = User
-        fields = ('id', 'profile',)
 
 
 # 전체 게시글
