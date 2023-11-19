@@ -7,6 +7,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
 
+import requests
+
 from .serializers import GenreSerializer, MovieSerializer, ReviewSerializer, MovieListSerializer
 from .models import Genre, Movie, Actor, Director, Review, WatchProvider
 
@@ -100,10 +102,32 @@ def movie_review_detail(request, movie_pk, review_pk):
 def movie_review_like(request, movie_pk, review_pk):
     review = get_object_or_404(Review, pk=review_pk)
     user = request.user
-
+ 
     if request.method == 'POST':
         if review.liked_users.filter(pk=user.pk).exists():
             review.liked_users.remove(user)
         else:
             review.liked_users.add(user)
         return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def recommend_by_movies(request):
+    user = request.user
+    reviews = user.review_set.filter(rating__gte=7)
+    recommend = { 'movie_list' : [] }
+
+    RECOMMEND_URL = 'https://api.themoviedb.org/3/movie/520951/recommendations?language=ko-KR&page=1'
+    for review in reviews:
+        params = {
+            
+        }
+        
+        movie_id = review.movie_id
+        recommend['movie_list'].append(movie_id)
+    
+    result = { 'results' : recommend }
+    return Response(result)
+    
+
