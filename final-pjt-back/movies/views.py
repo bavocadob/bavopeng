@@ -258,7 +258,7 @@ def movie_detail(request, movie_pk):
 def movie_review(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
     
-    if request.method == 'POST':  # 게시글에 대한 리뷰 작성
+    if request.user.is_authenticated and request.method == 'POST':  # 게시글에 대한 리뷰 작성
         serializer = ReviewSerializer(data=request.data)
         
         if serializer.is_valid(raise_exception=True):

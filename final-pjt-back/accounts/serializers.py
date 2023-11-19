@@ -4,21 +4,23 @@ from allauth.utils import get_username_max_length
 from allauth.account.adapter import get_adapter
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from django.contrib.auth import get_user_model
+from articles.models import Article
+from .models import Profile
 
 User = get_user_model()
 
 class CustomRegisterSerializer(RegisterSerializer):
-    nickname = serializers.CharField(
-        required=False,
-        allow_blank=True,
-        max_length=255
-    )
+    # nickname = serializers.CharField(
+    #     required=False,
+    #     allow_blank=True,
+    #     max_length=255
+    # )
 
     def get_cleaned_data(self):
         return {
             'username': self.validated_data.get('username', ''),
             'password1': self.validated_data.get('password1', ''),
-            'nickname': self.validated_data.get('nickname', ''),
+            # 'nickname': self.validated_data.get('nickname', ''),
         }
     
     def save(self, request):
@@ -28,9 +30,10 @@ class CustomRegisterSerializer(RegisterSerializer):
         adapter.save_user(request, user, self)
         self.custom_signup(request, user)
         return user
-    
 
-class UserSimpleSerializer(serializers.ModelSerializer):
+
+class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ('id', 'nickname')
+        model = Profile
+        fields = '__all__'
+
