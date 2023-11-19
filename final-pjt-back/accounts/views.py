@@ -14,7 +14,7 @@ User = get_user_model()
 # 프로필 조회, 수정
 @api_view(['GET', 'PUT'])
 def profile(reqeust, username):
-    user = get_object_or_404(User, username=username)
+    user = get_object_or_404(User.objects.select_related('profile').prefetch_related('liked_movies', 'disliked_movies', 'wished_movies', 'liked_articles', 'disliked_articles'), username=username)
     profile = user.profile
 
     if reqeust.method == 'GET':

@@ -30,10 +30,7 @@ def article_list(request):
 @api_view(['GET', 'PUT', 'DELETE'])
 def article_detail(request, article_pk):
     # article = get_object_or_404(Article, pk=article_pk)
-    try:
-        article = Article.objects.select_related('user', 'ref_movie').prefetch_related('comments__replies').get(pk=article_pk)
-    except:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    article = get_object_or_404(Article.objects.select_related('user', 'ref_movie').prefetch_related('comments__replies'), pk=article_pk)
 
     if request.method == 'GET':
         serializer = ArticleSerializer(article)
