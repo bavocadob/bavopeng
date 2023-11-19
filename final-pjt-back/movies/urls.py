@@ -2,9 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('insert/', views.insert_movies),
-    path('genres/', views.insert_genres),
-    path('providers/', views.insert_watch_providers),
+    path('search/<str:query>/', views.movie_search),
     path('<int:movie_pk>/', views.movie_detail),
     path('<int:movie_pk>/like/', views.movie_like),
     path('<int:movie_pk>/dislike/', views.movie_dislike),
