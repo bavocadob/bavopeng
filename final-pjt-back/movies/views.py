@@ -1,10 +1,12 @@
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 
-from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
+
+from rest_framework.decorators import permission_classes
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from rest_framework import status
 
 import requests
@@ -111,6 +113,31 @@ def movie_review_detail(request, movie_pk, review_pk):
             return Response(status=status.HTTP_204_NO_CONTENT)
     else:
         return Response(status=status.HTTP_403_FORBIDDEN)
+    
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def movie_review_pages(request, movie_pk, page):
+    PAGE_SIZE = 10
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    reviews = movie.review_set.all()
+
+    paginator = Paginator(reviews, PAGE_SIZE)
+    try:
+        reviews = paginator.page(page)
+    except PageNotAnInteger:
+        reviews = paginator.page(1)
+    except EmptyPage:
+        reviews = paginator.page(paginator.num_pages)
+
+    serializer = ReviewSerializer(reviews, many=True)
+    
+    return Response({
+        'count': paginator.count,
+        'num_pages': paginator.num_pages,
+        'current_page': min(page, paginator.num_pages),
+        'results': serializer.data
+    })
 
 
 @api_view(['POST'])
@@ -130,20 +157,21 @@ def movie_review_like(request, movie_pk, review_pk):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def recommend_by_movies(request):
-    user = request.user
-    reviews = user.review_set.filter(rating__gte=7)
-    recommend = { 'movie_list' : [] }
+    # user = request.user
+    # reviews = user.review_set.filter(rating__gte=7)
+    # recommend = { 'movie_list' : [] }
 
-    RECOMMEND_URL = 'https://api.themoviedb.org/3/movie/520951/recommendations?language=ko-KR&page=1'
-    for review in reviews:
-        params = {
+    # RECOMMEND_URL = 'https://api.themoviedb.org/3/movie/520951/recommendations?language=ko-KR&page=1'
+    # for review in reviews:
+    #     params = {
             
-        }
+    #     }
         
-        movie_id = review.movie_id
-        recommend['movie_list'].append(movie_id)
-    
-    result = { 'results' : recommend }
-    return Response(result)
+    #     movie_id = review.movie_id
+    #     recommend['movie_list'].append(movie_id)
+
+    # result = { 'results' : recommend }
+    # return Response(result)
+    pass
     
 
