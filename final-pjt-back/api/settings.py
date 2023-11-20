@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     
+    # third pary
+    'django_apscheduler',
 
     # Django apps
     'django.contrib.admin',
