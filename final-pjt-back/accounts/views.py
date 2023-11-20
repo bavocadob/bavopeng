@@ -23,7 +23,7 @@ def profile(reqeust, username):
     
     elif reqeust.method == 'PUT':
         if reqeust.user.is_authenticated and reqeust.user.profile == profile:
-            serializer = ProfileFormSerializer(profile, data=reqeust.data, partial=True)
+            serializer = ProfileFormSerializer(profile, data=reqeust.data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(serializer.data)
@@ -60,6 +60,7 @@ def following(request, user_pk):
         return Response(data, status=status.HTTP_403_FORBIDDEN)
     
 
+# 팔로워 조회
 @api_view(['GET'])
 def follower(request, user_pk):
     target_user = get_object_or_404(User, pk=user_pk)

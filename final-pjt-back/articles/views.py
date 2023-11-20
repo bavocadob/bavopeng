@@ -38,7 +38,7 @@ def article_detail(request, article_pk):
     
     elif request.user.is_authenticated and request.user == article.user:
         if request.method == 'PUT':
-            serializer = ArticleFormSerializer(article, data=request.data, partial=True)
+            serializer = ArticleFormSerializer(article, data=request.data)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(serializer.data)
@@ -72,7 +72,7 @@ def comment_create(request, article_pk):
 
 # 단일 댓글 조회, 수정, 삭제
 @api_view(['GET', 'PUT', 'DELETE'])
-def comment_detail(request, article_pk, comment_pk):
+def comment_detail(request, comment_pk):
     comment = get_object_or_404(Comment, pk=comment_pk)
     if request.method == 'GET':
         serializer = CommentSerializer(comment)
@@ -92,3 +92,43 @@ def comment_detail(request, article_pk, comment_pk):
     else:
         data = {'detail': 'Authentication credentials were not provided.'}
         return Response(data, status=status.HTTP_403_FORBIDDEN)
+    
+
+# 게시글 좋아요
+@api_view(['POST', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def like_article(request, article_pk):
+    article = get_object_or_404(Article, pk=article_pk)
+
+    if request.method == 'POST' and not article.liked_by.filter(pk=request.user.pk).exists():
+        if article.disliked_by.filter(pk=request.user.pk).exists():
+            article.disliked_by.remove(request.user)
+        article.liked_by.add(request.user)
+        return Response(status=status.HTTP_201_CREATED)
+
+    elif request.method == 'DELETE' and article.liked_by.filter(pk=request.user.pk).exists():
+        article.liked_by.remove(request.user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+
+# 게시글 싫어요
+@api_view(['POST', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def dislike_article(request, article_pk):
+    article = get_object_or_404(Article, pk=article_pk)
+
+    if request.method == 'POST' and not article.disliked_by.filter(pk=request.user.pk).exists():
+        if article.liked_by.filter(pk=request.user.pk).exists():
+            article.liked_by.remove(request.user)
+        article.disliked_by.add(request.user)
+        return Response(status=status.HTTP_201_CREATED)
+
+    elif request.method == 'DELETE' and article.disliked_by.filter(pk=request.user.pk).exists():
+        article.disliked_by.remove(request.user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
