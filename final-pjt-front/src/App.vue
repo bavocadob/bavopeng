@@ -7,11 +7,14 @@
     </div>
   </header>
   <RouterView />
+  <MovieView />
 </template>
 
 
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
+import MovieView from './views/MovieView.vue'
+
 
 </script>
 

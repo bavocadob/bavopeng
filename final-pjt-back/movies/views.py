@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .serializers import GenreSerializer, MovieSerializer, ReviewSerializer, MovieListSerializer
-from .models import Genre, Movie, Actor, Director, Review, WatchProvider
+from .models import Genre, Movie, Actor, Director, Review, WatchProvider, NowShowing, Upcoming
 
 
 API_KEY = settings.API_KEY
@@ -175,3 +175,21 @@ def recommend_by_movies(request):
     pass
     
 
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def movie_nowshowing(request):
+    now_showing = NowShowing.objects.all()
+    movies = [ns.movie for ns in now_showing if ns.movie.poster_path]
+    serializer = MovieListSerializer(movies, many=True)
+
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def movie_upcoming(request):
+    upcoming = Upcoming.objects.all()
+    movies = [ns.movie for ns in upcoming if ns.movie.poster_path]
+    serializer = MovieListSerializer(movies, many=True)
+
+    return Response(serializer.data)
