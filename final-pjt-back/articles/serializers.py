@@ -37,7 +37,7 @@ class CommentSerializer(serializers.ModelSerializer):
 # 단일 게시글 조회
 class ArticleSerializer(serializers.ModelSerializer):
     user = UserProfileSerializer(read_only=True)
-    comments = serializers.SerializerMethodField()
+    # comments = serializers.SerializerMethodField()
     comment_cnt = serializers.IntegerField(source='comments.count', read_only=True)
     like_cnt = serializers.IntegerField(source='liked_by.count', read_only=True)
     dislike_cnt = serializers.IntegerField(source='disliked_by.count', read_only=True)
@@ -45,12 +45,12 @@ class ArticleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
         fields = ('id', 'user', 'title', 'content', 'image', 'ref_movie', 'created_at', 'updated_at', 
-                  'like_cnt', 'dislike_cnt', 'comments', 'comment_cnt',)
+                  'like_cnt', 'dislike_cnt', 'comment_cnt',)
 
     # 부모 댓글만 가져오기
-    def get_comments(self, obj):
-        comments = CommentSerializer(obj.get_parent_comments(), many=True, read_only=True).data
-        return comments
+    # def get_comments(self, obj):
+    #     comments = CommentSerializer(obj.get_parent_comments(), many=True, read_only=True).data
+    #     return comments
 
 
 # 단일 게시글 작성, 수정
