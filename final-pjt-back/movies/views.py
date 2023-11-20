@@ -77,6 +77,20 @@ def movie_dislike(request, movie_pk):
         else:
             movie.liked_users.add(user)
         return Response(status=status.HTTP_200_OK)            
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def movie_wish(request, movie_pk):
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    user = request.user
+
+    if request.method == 'POST':
+        if movie.wished_by.filter(pk=user.pk).exists():
+            movie.wished_by.remove(user)
+        else:
+            movie.wished_by.add(user)
+        return Response(status=status.HTTP_200_OK)
     
 
 @api_view(['GET','POST'])
