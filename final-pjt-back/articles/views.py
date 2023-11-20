@@ -9,7 +9,7 @@ from .serializers import ArticleListSerializer, ArticleSerializer, ArticleFormSe
 # Create your views here.
 # 전체 게시글 조회, 게시글 생성
 @api_view(['GET', 'POST'])
-def article_list(request):
+def article(request):
     if request.method == 'GET':
         articles = get_list_or_404(Article)
         serializer = ArticleListSerializer(articles, many=True)
@@ -30,7 +30,7 @@ def article_list(request):
 @api_view(['GET', 'PUT', 'DELETE'])
 def article_detail(request, article_pk):
     # article = get_object_or_404(Article, pk=article_pk)
-    article = get_object_or_404(Article.objects.select_related('user', 'ref_movie').prefetch_related('comments__replies'), pk=article_pk)
+    article = get_object_or_404(Article.objects.select_related('user', 'ref_movie'), pk=article_pk)
 
     if request.method == 'GET':
         serializer = ArticleSerializer(article)
@@ -51,11 +51,16 @@ def article_detail(request, article_pk):
         return Response(data, status=status.HTTP_403_FORBIDDEN)
     
 
-# 댓글 생성
-@api_view(['POST'])
+# 게시글에 대한 댓글 조회, 생성
+@api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
-def comment_create(request, article_pk):
-    if request.method == 'POST':
+def comment(request, article_pk):
+    if request.method == 'GET':
+        comment = get_list_or_404(Comment.objects.filter(article=article_pk).filter(parent_comment=None))
+        serializer = CommentSerializer(comment, many=True)
+        return Response(serializer.data)
+    
+    elif request.method == 'POST':
         article = get_object_or_404(Article, pk=article_pk)
         parent_comment_id = request.data.get('parent_comment_id')
 
@@ -95,58 +100,49 @@ def comment_detail(request, comment_pk):
     
 
 # 게시글 좋아요
-@api_view(['POST', 'DELETE'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def like_article(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
+    user = request.user
 
-    if request.method == 'POST' and not article.liked_by.filter(pk=request.user.pk).exists():
-        if article.disliked_by.filter(pk=request.user.pk).exists():
-            article.disliked_by.remove(request.user)
-        article.liked_by.add(request.user)
-        return Response(status=status.HTTP_201_CREATED)
-
-    elif request.method == 'DELETE' and article.liked_by.filter(pk=request.user.pk).exists():
-        article.liked_by.remove(request.user)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
-    else:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+    if request.method == 'POST':
+        if article.liked_by.filter(pk=user.pk).exists():
+            article.liked_by.remove(user)
+        else:
+            if article.disliked_by.filter(pk=user.pk).exists():
+                article.disliked_by.remove(user)
+            article.liked_by.add(user)
+        return Response(status=status.HTTP_200_OK)
     
 
 # 게시글 싫어요
-@api_view(['POST', 'DELETE'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def dislike_article(request, article_pk):
     article = get_object_or_404(Article, pk=article_pk)
+    user = request.user
 
-    if request.method == 'POST' and not article.disliked_by.filter(pk=request.user.pk).exists():
-        if article.liked_by.filter(pk=request.user.pk).exists():
-            article.liked_by.remove(request.user)
-        article.disliked_by.add(request.user)
-        return Response(status=status.HTTP_201_CREATED)
-
-    elif request.method == 'DELETE' and article.disliked_by.filter(pk=request.user.pk).exists():
-        article.disliked_by.remove(request.user)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
-    else:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+    if request.method == 'POST':
+        if article.disliked_by.filter(pk=user.pk).exists():
+            article.disliked_by.remove(user)
+        else:
+            if article.liked_by.filter(pk=user.pk).exists():
+                article.liked_by.remove(user)
+            article.disliked_by.add(user)
+        return Response(status=status.HTTP_200_OK)
     
 
 # 댓글 좋아요
-@api_view(['POST', 'DELETE'])
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def like_comment(request, comment_pk):
     comment = get_object_or_404(Comment, pk=comment_pk)
+    user = request.user
 
-    if request.method == 'POST' and not comment.liked_by.filter(pk=request.user.pk).exists():
-        comment.liked_by.add(request.user)
-        return Response(status=status.HTTP_201_CREATED)
-
-    elif request.method == 'DELETE' and comment.liked_by.filter(pk=request.user.pk).exists():
-        comment.liked_by.remove(request.user)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
-    else:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+    if request.method == 'POST':
+        if comment.liked_by.filter(pk=user.pk).exists():
+            comment.liked_by.remove(user)
+        else:
+            comment.liked_by.add(user)
+        return Response(status=status.HTTP_200_OK)
