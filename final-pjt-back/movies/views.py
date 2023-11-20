@@ -9,8 +9,6 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-import requests
-
 from .serializers import GenreSerializer, MovieSerializer, ReviewSerializer, MovieListSerializer
 from .models import Genre, Movie, Actor, Director, Review, WatchProvider
 
@@ -39,8 +37,8 @@ def movie_review(request, movie_pk):
         reviews = movie.review_set.all()
         serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data)
-    
-    
+
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def movie_search(request, query):
@@ -56,12 +54,14 @@ def movie_search(request, query):
 def movie_like(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
     user = request.user
-
+    
     if request.method == 'POST':
-        if movie.liked_users.filter(pk=user.pk).exists():
-            movie.liked_users.remove(user)
+        if movie.liked_by.filter(pk=user.pk).exists():
+            movie.liked_by.remove(user)
         else:
-            movie.liked_users.add(user)
+            if movie.disliked_by.filter(pk=user.pk).exists():
+                movie.disliked_by.remove(user)
+            movie.liked_by.add(user)
         return Response(status=status.HTTP_200_OK)
 
             
@@ -70,34 +70,19 @@ def movie_like(request, movie_pk):
 def movie_dislike(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
     user = request.user
-
     if request.method == 'POST':
-        if movie.disliked_users.filter(pk=user.pk).exists():
-            movie.liked_users.remove(user)
+        if movie.disliked_by.filter(pk=user.pk).exists():
+            movie.disliked_by.remove(user)
         else:
-            movie.liked_users.add(user)
-        return Response(status=status.HTTP_200_OK)            
-    
-
-@api_view(['GET','POST'])
-def movie_review(request, movie_pk):
-    movie = get_object_or_404(Movie, pk=movie_pk)
-    
-    if request.method == 'POST':  # 게시글에 대한 리뷰 작성
-        serializer = ReviewSerializer(data=request.data)
-        
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(movie=movie, user=request.user)
-            return Response(serializer.data)
-    elif request.method == 'GET':  # 게시글에 대한 리뷰 조회
-        reviews = movie.review_set.all()
-        serializer = ReviewSerializer(reviews, many=True)
-        return Response(serializer.data)
+            if movie.liked_by.filter(pk=user.pk).exists():
+                movie.liked_by.remove(user)
+            movie.disliked_by.add(user)
+        return Response(status=status.HTTP_200_OK)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([AllowAny])
-def movie_review_detail(request, movie_pk, review_pk):
+def movie_review_detail(request, review_pk):
     review = get_object_or_404(Review, pk=review_pk)
     if request.method == 'GET': # 리뷰 단일 조회
         serializer = ReviewSerializer(review)
@@ -118,9 +103,24 @@ def movie_review_detail(request, movie_pk, review_pk):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def movie_review_pages(request, movie_pk, page):
+
+    
     PAGE_SIZE = 10
     movie = get_object_or_404(Movie, pk=movie_pk)
-    reviews = movie.review_set.all()
+    # 정렬 방식을 URL 쿼리 파라미터에서 가져옵니다.
+    # 기본값은 1입니다.
+    sort_by = int(request.GET.get('sort_by', 1))
+    
+    # 정렬 방식에 따른 필드 이름을 매핑하는 딕셔너리를 생성합니다.
+    sort_mapping = {
+        1: 'created_at',
+        2: '-created_at',
+        3: 'rating',
+        4: '-rating'
+    }
+
+    sort_field = sort_mapping.get(sort_by, 'created_at')
+    reviews = movie.review_set.all().order_by(sort_field)
 
     paginator = Paginator(reviews, PAGE_SIZE)
     try:
@@ -142,7 +142,7 @@ def movie_review_pages(request, movie_pk, page):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def movie_review_like(request, movie_pk, review_pk):
+def movie_review_like(request, review_pk):
     review = get_object_or_404(Review, pk=review_pk)
     user = request.user
  
