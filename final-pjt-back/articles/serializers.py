@@ -7,7 +7,7 @@ from .models import Article, Comment
 
 # 전체 게시글
 class ArticleListSerializer(serializers.ModelSerializer):
-    comment_cnt = serializers.IntegerField(source='comment_set.count', read_only=True)
+    comment_cnt = serializers.IntegerField(source='comments.count', read_only=True)
     liked_cnt = serializers.IntegerField(source='liked_by.count', read_only=True)
     user = UserProfileSerializer(read_only=True)
     
