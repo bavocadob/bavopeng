@@ -74,10 +74,38 @@ def movie_dislike(request, movie_pk):
         if movie.disliked_by.filter(pk=user.pk).exists():
             movie.disliked_by.remove(user)
         else:
-            if movie.liked_by.filter(pk=user.pk).exists():
-                movie.liked_by.remove(user)
-            movie.disliked_by.add(user)
+            movie.liked_users.add(user)
+        return Response(status=status.HTTP_200_OK)            
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def movie_wish(request, movie_pk):
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    user = request.user
+
+    if request.method == 'POST':
+        if movie.wished_by.filter(pk=user.pk).exists():
+            movie.wished_by.remove(user)
+        else:
+            movie.wished_by.add(user)
         return Response(status=status.HTTP_200_OK)
+    
+
+@api_view(['GET','POST'])
+def movie_review(request, movie_pk):
+    movie = get_object_or_404(Movie, pk=movie_pk)
+    
+    if request.method == 'POST':  # 게시글에 대한 리뷰 작성
+        serializer = ReviewSerializer(data=request.data)
+        
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(movie=movie, user=request.user)
+            return Response(serializer.data)
+    elif request.method == 'GET':  # 게시글에 대한 리뷰 조회
+        reviews = movie.review_set.all()
+        serializer = ReviewSerializer(reviews, many=True)
+        return Response(serializer.data)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
