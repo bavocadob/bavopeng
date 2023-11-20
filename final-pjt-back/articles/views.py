@@ -2,29 +2,45 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import get_object_or_404, get_list_or_404
 from .models import Article, Comment
 from .serializers import ArticleListSerializer, ArticleSerializer, ArticleFormSerializer, CommentSerializer, CommentFormSerializer
 
 # Create your views here.
 # 전체 게시글 조회, 게시글 생성
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def article(request):
-    if request.method == 'GET':
-        articles = get_list_or_404(Article)
-        serializer = ArticleListSerializer(articles, many=True)
-        return Response(serializer.data)
+    serializer = ArticleFormSerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    elif request.user.is_authenticated and request.method == 'POST':
-        serializer = ArticleFormSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
-    else:
-        data = {'detail': 'Authentication credentials were not provided.'}
-        return Response(data, status=status.HTTP_403_FORBIDDEN)
-        
+
+@api_view(['GET'])
+def article_list(request, page):
+    PAGE_SIZE = 30
+    articles = get_list_or_404(Article)
+
+    paginator = Paginator(articles, PAGE_SIZE)
+    try:
+        articles = paginator.page(page)
+    except PageNotAnInteger:
+        articles = paginator.page(1)
+    except EmptyPage:
+        articles = paginator.page(paginator.num_pages)
+
+    serializer = ArticleListSerializer(articles, many=True)
+    data = {
+        'count': paginator.count,
+        'num_pages': paginator.num_pages,
+        'current_page': min(page, paginator.num_pages),
+        'results': serializer.data
+    }
+    return Response(data)
+
+
 
 # 단일 게시글 조회, 수정, 삭제
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -51,39 +67,55 @@ def article_detail(request, article_pk):
         return Response(data, status=status.HTTP_403_FORBIDDEN)
     
 
-# 게시글에 대한 댓글 조회, 생성
-@api_view(['GET', 'POST'])
+# 댓글 생성
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def comment(request, article_pk):
-    if request.method == 'GET':
-        comment = get_list_or_404(Comment.objects.filter(article=article_pk).filter(parent_comment=None))
-        serializer = CommentSerializer(comment, many=True)
-        return Response(serializer.data)
-    
-    elif request.method == 'POST':
-        article = get_object_or_404(Article, pk=article_pk)
-        parent_comment_id = request.data.get('parent_comment_id')
+    article = get_object_or_404(Article, pk=article_pk)
+    parent_comment_id = request.data.get('parent_comment_id')
 
-        if parent_comment_id: 
-            parent_comment = get_object_or_404(Comment, id=parent_comment_id)
-        else:
-            parent_comment = None
+    if parent_comment_id: 
+        parent_comment = get_object_or_404(Comment, id=parent_comment_id)
+    else:
+        parent_comment = None
 
-        serializer = CommentFormSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(user=request.user, article=article, parent_comment=parent_comment)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    serializer = CommentFormSerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(user=request.user, article=article, parent_comment=parent_comment)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-# 단일 댓글 조회, 수정, 삭제
-@api_view(['GET', 'PUT', 'DELETE'])
+# 게시글에 대한 댓글 조회
+@api_view(['GET'])
+def comment_list(request, article_pk, page):
+    article = get_object_or_404(Article, pk=article_pk)
+    PAGE_SIZE = 5
+    page = int(request.GET.get('page', 1))
+    comments = get_list_or_404(Comment.objects.filter(article=article).filter(parent_comment=None))
+
+    paginator = Paginator(comments, PAGE_SIZE)
+    try:
+        comments = paginator.page(page)
+    except PageNotAnInteger:
+        comments = paginator.page(1)
+    except EmptyPage:
+        comments = paginator.page(paginator.num_pages)
+
+    serializer = CommentSerializer(comments, many=True)
+    data = {
+        'count': paginator.count,
+        'num_pages': paginator.num_pages,
+        'current_page': min(page, paginator.num_pages),
+        'results': serializer.data
+    }
+    return Response(data)
+
+
+# 단일 댓글 수정, 삭제
+@api_view(['PUT', 'DELETE'])
 def comment_detail(request, comment_pk):
     comment = get_object_or_404(Comment, pk=comment_pk)
-    if request.method == 'GET':
-        serializer = CommentSerializer(comment)
-        return Response(serializer.data)
-    
-    elif request.user.is_authenticated and request.user == comment.user:
+    if request.user.is_authenticated and request.user == comment.user:
         if request.method == 'PUT':
             serializer = CommentFormSerializer(comment, request.data)
             if serializer.is_valid(raise_exception=True):
