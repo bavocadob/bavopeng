@@ -54,6 +54,14 @@ class Movie(models.Model):
     rating_cnt = models.IntegerField(default=0)
 
 
+class NowShowing(models.Model):
+    movie = models.OneToOneField(Movie, on_delete=models.CASCADE)
+
+
+class Upcoming(models.Model):
+    movie = models.OneToOneField(Movie, on_delete=models.CASCADE)
+
+
 class Review(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
