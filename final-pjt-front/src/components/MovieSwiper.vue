@@ -2,7 +2,7 @@
   <div>
     <div>
       <swiper
-        :slides-per-view="5"
+        :slides-per-view="7"
         :space-between="30"
       >
         <swiper-slide v-for="movie in movies" :key="movie.id">
@@ -28,4 +28,6 @@ defineProps({
 </script>
 
 <style scoped>
+
+
 </style>

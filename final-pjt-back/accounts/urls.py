@@ -5,4 +5,5 @@ urlpatterns = [
     path('profile/<str:username>/', views.profile),
     path('following/<int:user_pk>/', views.following),
     path('follower/<int:user_pk>/', views.follower),
+    path('check-id/', views.check_duplicate_id),
 ]

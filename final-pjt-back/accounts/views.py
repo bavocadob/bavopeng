@@ -67,3 +67,13 @@ def follower(request, user_pk):
     follower_list = target_user.followers.all()
     serializer = UserFollowSerializer(follower_list, many=True)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+def check_duplicate_id(request):
+    username = request.GET.get('username', '')
+    if User.objects.all().filter(username=username).exists():
+        return Response({'result':True})
+    else:
+        return Response({'result':False})
+    
