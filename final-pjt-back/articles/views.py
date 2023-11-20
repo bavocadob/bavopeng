@@ -132,3 +132,21 @@ def dislike_article(request, article_pk):
     
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+
+# 댓글 좋아요
+@api_view(['POST', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def like_comment(request, comment_pk):
+    comment = get_object_or_404(Comment, pk=comment_pk)
+
+    if request.method == 'POST' and not comment.liked_by.filter(pk=request.user.pk).exists():
+        comment.liked_by.add(request.user)
+        return Response(status=status.HTTP_201_CREATED)
+
+    elif request.method == 'DELETE' and comment.liked_by.filter(pk=request.user.pk).exists():
+        comment.liked_by.remove(request.user)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
