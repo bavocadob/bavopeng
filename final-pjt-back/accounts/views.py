@@ -60,6 +60,7 @@ def following(request, user_pk):
         return Response(data, status=status.HTTP_403_FORBIDDEN)
     
 
+# 팔로워 조회
 @api_view(['GET'])
 def follower(request, user_pk):
     target_user = get_object_or_404(User, pk=user_pk)
