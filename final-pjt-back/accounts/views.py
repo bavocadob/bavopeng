@@ -5,7 +5,7 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from .models import Profile
-from .serializers import ProfileSerializer, ProfileFormSerializer, UserFollowSerializer
+from .serializers import ProfileSerializer, ProfileFormSerializer, UserFollowSerializer, UserProfileSerializer
 
 # Create your views here.
 User = get_user_model()
@@ -70,10 +70,18 @@ def follower(request, user_pk):
 
 
 @api_view(['GET'])
-def check_duplicate_id(request):
+def exists_id(request):
     username = request.GET.get('username', '')
     if User.objects.all().filter(username=username).exists():
         return Response({'result':True})
     else:
         return Response({'result':False})
     
+
+@api_view(['Get'])
+@permission_classes([IsAuthenticated])
+def get_user_info(request):
+    user = request.user
+    user_info = User.objects.get(pk=user.pk)
+    serializer = UserProfileSerializer(user_info)
+    return Response(serializer.data)
