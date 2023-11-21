@@ -8,6 +8,7 @@ export const useUserStore = defineStore('user', () => {
   const router = useRouter()
   const API_URL = 'http://127.0.0.1:8000'
   const token = ref(null)
+  const userInfo = ref({})
   const isLogin = computed(() => {
     if (token.value === null) {
       return false
@@ -29,9 +30,29 @@ export const useUserStore = defineStore('user', () => {
       .then((res) => {
         // console.log(res)
         token.value = res.data.key
+        return res.data.key
+      })
+      .then((token) => {
+        getUserInfo(token)
       })
       .then(() => {
         router.replace({name: 'main'})
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+
+  const getUserInfo = function (token) {
+    axios({
+      method: 'get',
+      url: `${API_URL}/api/v1/userinfo/`,
+      headers: {
+        Authorization: `Token ${token}`
+      }
+    })
+      .then((res) => {
+        userInfo.value = res.data
       })
       .catch((err) => {
         console.log(err)
@@ -73,11 +94,12 @@ export const useUserStore = defineStore('user', () => {
       .then((res) => {
         console.log(res)
         token.value = null
+        userInfo.value = {}
       })
       .catch((err) => {
         console.log(err)
       })
   }
   
-  return { API_URL, signUp, login, logout, token, isLogin}
+  return { API_URL, signUp, login, logout, token, isLogin, userInfo}
 }, {persist: true})

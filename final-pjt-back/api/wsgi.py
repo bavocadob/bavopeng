@@ -24,8 +24,8 @@ scheduler = BackgroundScheduler()
 scheduler.add_jobstore(DjangoJobStore(), "default")
 
 # 서버 시작 시 실행
-update_now_playing()
-update_upcoming()
+# update_now_playing()
+# update_upcoming()
 
 # 매일 자정에 실행
 # scheduler.add_job(update_movie_rating_avg, 'cron', hour=0, id='my_job_id', replace_existing=True)
