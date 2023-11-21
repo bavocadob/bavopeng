@@ -32,7 +32,7 @@
           </tr>
         </tbody>
       </table>
-      <div class="flex items-center justify-center" v-else>
+      <div class="flex flex-col items-center justify-center bg-gray-100 py-60 px-4 rounded" v-else>
         <i class="fas fa-exclamation-circle text-3xl mb-4"></i>
         <p class="text-lg text-gray-500">아직 작성된 게시글이 없습니다.</p>
       </div>

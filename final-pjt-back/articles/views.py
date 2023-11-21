@@ -151,7 +151,13 @@ def like_article(request, article_pk):
             if article.disliked_by.filter(pk=user.pk).exists():
                 article.disliked_by.remove(user)
             article.liked_by.add(user)
-        return Response(status=status.HTTP_200_OK)
+        data = {
+            'is_like' : article.liked_by.filter(pk=user.pk).exists(),
+            'is_dislike' : article.disliked_by.filter(pk=user.pk).exists(),
+            'like_cnt' : article.liked_by.count(),
+            'dislike_cnt' : article.disliked_by.count(),
+        }
+        return Response(data, status=status.HTTP_200_OK)
     
 
 # 게시글 싫어요
@@ -168,7 +174,17 @@ def dislike_article(request, article_pk):
             if article.liked_by.filter(pk=user.pk).exists():
                 article.liked_by.remove(user)
             article.disliked_by.add(user)
-        return Response(status=status.HTTP_200_OK)
+        # isLike.valu
+        # isDislike.v
+        # likeCnt.val
+        # dislikeCnt.
+        data = {
+            'is_like' : article.liked_by.filter(pk=user.pk).exists(),
+            'is_dislike' : article.disliked_by.filter(pk=user.pk).exists(),
+            'like_cnt' : article.liked_by.count(),
+            'dislike_cnt' : article.disliked_by.count(),
+        }
+        return Response(data, status=status.HTTP_200_OK)
     
 
 # 댓글 좋아요

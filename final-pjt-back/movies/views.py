@@ -181,7 +181,7 @@ def movie_review_like(request, review_pk):
             review.liked_by.add(user)
         
         result = {
-            'like_cnt' : len(review.liked_by.all()),
+            'like_cnt' : review.liked_by.count(),
             'is_like' : review.liked_by.filter(pk=user.pk).exists()
         }
         return Response(result, status=status.HTTP_200_OK)
@@ -199,7 +199,7 @@ def recommend_by_movies(request):
     #     params = {
             
     #     }
-        
+         
     #     movie_id = review.movie_id
     #     recommend['movie_list'].append(movie_id)
 

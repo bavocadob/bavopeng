@@ -1,11 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ArticleCreateView from '@/views/ArticleCreateView.vue'
+import ArticleDetailView from '@/views/ArticleDetailView.vue'
 import MovieDetailView from '@/views/MovieDetailView.vue'
 import MainView from '@/views/MainView.vue'
 import SignUpView from '@/views/SignUpView.vue'
 import LoginView from '@/views/LoginView.vue'
 import MovieView from '@/views/MovieView.vue'
 import CommunityView from '@/views/CommunityView.vue'
+
 
 
 const router = createRouter({
@@ -45,6 +47,16 @@ const router = createRouter({
       path: '/community',
       name: 'community',
       component: CommunityView
+    },
+    {
+      path: '/community',
+      name: 'community',
+      component: CommunityView
+    },
+    {
+      path: '/community/:articleId',
+      name: 'articleDetail',
+      component: ArticleDetailView
     },
   ]
 })

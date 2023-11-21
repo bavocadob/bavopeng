@@ -15,10 +15,12 @@
     </QuillEditor>
 
     <div class="mt-5 flex justify-end">
-      <button class="bg-blue-500 hover:bg-blue-500 hover:opacity-90 text-white py-2 px-5 rounded-lg transition duration-200 ease-in-out" @click="submit">
-        글 쓰기
+      <button class="bg-blue-900 hover:bg-blue-1000 hover:opacity-90 text-white py-2 px-5 rounded-lg text-sm transition duration-200 ease-in-out" @click="articleCreate">
+        글쓰기
       </button>
     </div>
+
+
   </div>
 </template>
 
@@ -27,11 +29,14 @@ import { ref, onMounted } from 'vue'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import ImageUploader from 'quill-image-uploader'
-
+import { useUserStore } from '@/stores/user'
+import { useRouter } from 'vue-router'
 import axios from 'axios'
 
 const title = ref('')
 const content = ref('')
+const store = useUserStore()
+const router = useRouter()
 
 const modules = {
         name: 'imageUploader',
@@ -71,14 +76,31 @@ const toolbar = [
       ['image']
     ]
 
-const submit = async () => {
-  try {
-    console.log(content.value)
-    console.log(title.value)
-    
-  } catch (error) {
-    console.error(error)
+const articleCreate = function() {
+  const data = {
+    title : title.value,
+    content : content.value,
   }
+
+  axios({
+    method : 'POST',
+    url : `${store.API_URL}/api/v1/article/`,
+    data,
+    headers : {
+      Authorization : `token ${store.token}`
+    }
+  })
+  .then((res) => {
+    console.log(res)
+    router.push({
+      name: 'articleDetail',
+      params: {
+        articleId: res.data.id,
+      },
+    })
+  })
+  .catch((err) => console.log(err))
+
 }
 
 

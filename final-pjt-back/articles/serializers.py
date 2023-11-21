@@ -60,7 +60,7 @@ class ArticleFormSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
         # ManyToMany Field 제외
-        fields = ('user', 'ref_movie', 'title', 'content', 'image', 'created_at', 'updated_at')
+        fields = ('id', 'user', 'ref_movie', 'title', 'content', 'image', 'created_at', 'updated_at')
 
 
 # 댓글 작성, 수정
