@@ -185,7 +185,8 @@ AUTHENTICATION_BACKENDS = (
 
 # REST AUTH 회원가입 기본 Serializer 재정의
 REST_AUTH = {
-    'REGISTER_SERIALIZER' : 'accounts.serializers.CustomRegisterSerializer'
+    'REGISTER_SERIALIZER' : 'accounts.serializers.CustomRegisterSerializer',
+    'USE_JWT': False,
 }
 
 ACCOUNT_ADAPTER = 'accounts.models.CustomAccountAdapter'

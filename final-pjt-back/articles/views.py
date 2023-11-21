@@ -3,9 +3,15 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.conf import settings
 from django.shortcuts import get_object_or_404, get_list_or_404
+
 from .models import Article, Comment
 from .serializers import ArticleListSerializer, ArticleSerializer, ArticleFormSerializer, CommentSerializer, CommentFormSerializer
+
+import os
 
 # Create your views here.
 # 전체 게시글 조회, 게시글 생성
@@ -178,3 +184,15 @@ def like_comment(request, comment_pk):
         else:
             comment.liked_by.add(user)
         return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+def upload_image(request):
+    if request.method == 'POST':
+        file = request.FILES['image']
+        file_name = default_storage.save('article_images/' + file.name, ContentFile(file.read()))
+        file_url = os.path.join(settings.MEDIA_URL, file_name)
+        
+        return Response({'url': f'http://127.0.0.1:8000{file_url}'})
+    else:
+        return Response({'error': 'Invalid method'})

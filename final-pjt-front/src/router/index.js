@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import ArticleCreateView from '@/views/ArticleCreateView.vue'
+import MovieDetailView from '@/views/MovieDetailView.vue'
 import MainView from '@/views/MainView.vue'
 import SignUpView from '@/views/SignUpView.vue'
 import LoginView from '@/views/LoginView.vue'
@@ -27,6 +29,16 @@ const router = createRouter({
       path: '/movie',
       name: 'movieView',
       component: MovieView
+    },
+    {
+      path: '/article/create',
+      name: 'articleCreate',
+      component: ArticleCreateView
+    },
+    {
+      path: '/movie/:movieId',
+      name: 'movieDetail',
+      component: MovieDetailView
     },
   ]
 })
