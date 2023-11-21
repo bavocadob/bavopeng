@@ -94,6 +94,7 @@ export const useUserStore = defineStore('user', () => {
       .then((res) => {
         console.log(res)
         token.value = null
+        userInfo.value = {}
       })
       .catch((err) => {
         console.log(err)
