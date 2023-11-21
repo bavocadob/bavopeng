@@ -5,6 +5,10 @@
       class="profile-image"
       :src="`https://image.tmdb.org/t/p/original${actor.profile_path}`"
     />
+    <img
+      v-else
+      src="@/assets/images/anonymous.png"
+    >
 
     <div>
       <p v-if="actor.korean_name" class="profile-name">{{ actor.korean_name }}</p>
@@ -36,5 +40,6 @@ const props = defineProps({
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 
 </style>

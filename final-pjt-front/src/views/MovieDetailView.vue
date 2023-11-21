@@ -1,6 +1,6 @@
 <template>
   <section>
-    <div class="flex">
+    <div class="flex justify-center">
       <div class="w-3/5 mr-8">
         <div class="mb-8 bg-gray-200 shadow-sm rounded-lg">
           <div
@@ -45,19 +45,27 @@
                 </div>
               </div>
 
-              <div class="flex justify-between">
-                <div class="flex items-center">
-               <StarRatingVue v-model="movie.rating_avg" :disableClick="true" :starSize="34" />
-
-                  <p class="text-lg font-bold ml-1">
-                    {{ Math.round(movie.rating_avg * 10) / 10 }}
-                  </p>
+              <div class="flex flex-col justify-between">
+                <div class="flex justify-between mb-4">
+                  <div class="flex items-center">
+                    <StarRatingVue v-model="movie.rating_avg" :disableClick="true" :starSize="34" />
+                    <p class="text-lg font-bold ml-1">
+                      {{ Math.round(movie.rating_avg * 10) / 10 }}
+                    </p>
+                  </div>
                 </div>
-
-                <div class="flex items-center font-semibold bg-blue-500 border border-blue-500 text-white py-2 px-6 rounded-md cursor-pointer hover:bg-blue-600">
-                  리뷰 쓰기
+                <div class="flex justify-between">
+                  <div class="flex items-center">
+                    <button class="font-semibold border bg-yellow-500 border-yellow-500 text-gray-900 py-2 px-6 rounded-md cursor-pointer hover:bg-yellow-600 mr-2">
+                      <i class="fas fa-thumbs-up"></i> 좋아요
+                    </button>
+                    <button class="font-semibold border bg-yellow-500 border-yellow-500 text-gray-900 py-2 px-6 rounded-md cursor-pointer hover:bg-yellow-600">
+                      <i class="fas fa-thumbs-down"></i> 싫어요
+                    </button>
+                  </div>
                 </div>
               </div>
+
 
             </div>
           </div>
@@ -66,7 +74,7 @@
           <div class="border-b border-gray-400 pb-8 mb-8">
             <h2 class="text-xl font-bold mb-4">줄거리</h2>
 
-            <p class="text-lg font-light">{{ movie.overview }}</p>
+            <p class="text-base font-light">{{ movie.overview }}</p>
           </div>
 
           <div v-if="movie.trailer" class="border-b border-gray-400 pb-8 mb-8">

@@ -5,6 +5,7 @@ import MainView from '@/views/MainView.vue'
 import SignUpView from '@/views/SignUpView.vue'
 import LoginView from '@/views/LoginView.vue'
 import MovieView from '@/views/MovieView.vue'
+import CommunityView from '@/views/CommunityView.vue'
 
 
 const router = createRouter({
@@ -39,6 +40,11 @@ const router = createRouter({
       path: '/movie/:movieId',
       name: 'movieDetail',
       component: MovieDetailView
+    },
+    {
+      path: '/community',
+      name: 'community',
+      component: CommunityView
     },
   ]
 })

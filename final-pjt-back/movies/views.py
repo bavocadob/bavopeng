@@ -175,11 +175,16 @@ def movie_review_like(request, review_pk):
     user = request.user
  
     if request.method == 'POST':
-        if review.liked_users.filter(pk=user.pk).exists():
-            review.liked_users.remove(user)
+        if review.liked_by.filter(pk=user.pk).exists():
+            review.liked_by.remove(user)
         else:
-            review.liked_users.add(user)
-        return Response(status=status.HTTP_200_OK)
+            review.liked_by.add(user)
+        
+        result = {
+            'like_cnt' : len(review.liked_by.all()),
+            'is_like' : review.liked_by.filter(pk=user.pk).exists()
+        }
+        return Response(result, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])

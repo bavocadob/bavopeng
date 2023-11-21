@@ -3,7 +3,7 @@
     <div class="w-screen min-h-screen bg-blue-950">
       <nav
         v-show="route.name !== 'loginView'" 
-        class="w-screen h-20 fixed top-0 bg-blue-950 flex justify-between items-center"
+        class="w-screen h-20 fixed top-0 bg-blue-950 flex justify-between items-center z-50"
       >
         <div class="w-[500px] ms-5 flex justify-around items-center">
           <img @click="goMain" alt="main" class="cursor-pointer" src="@/assets/images/Logo2.svg" width="150" height="50" >
@@ -11,8 +11,7 @@
             <RouterLink :to="{ name: 'movieView' }">Movie</RouterLink>
           </div>
           <div class="text-center align-top text-white text-base font-semibold leading-normal">
-            Coummunity
-            <!-- <RouterLink>Community</RouterLink> -->
+            <RouterLink :to="{ name: 'community' }">Community</RouterLink> 
           </div>
           <div class="text-center align-top text-white text-base font-semibold leading-normal">
             Wishlist
@@ -34,7 +33,7 @@
         </div>
       </nav>
       <div class="w-screen bg-black bg-opacity-10">
-        <div class="w-9/12 min-h-screen mx-auto mt-20 pt-5 mb-20 text-white">
+        <div class="w-9/12 min-h-screen mx-auto mt-20 pt-5 mb-20">
           <RouterView />
         </div>
         <footer class="w-screen h-20 bottom-0 border border-black"></footer>
