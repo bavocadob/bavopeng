@@ -23,15 +23,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { QuillEditor } from '@vueup/vue-quill';
+import { ref, onMounted } from 'vue'
+import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
-import ImageUploader from 'quill-image-uploader';
+import ImageUploader from 'quill-image-uploader'
 
 import axios from 'axios'
 
 const title = ref('')
-const content = ref('');
+const content = ref('')
 
 const modules = {
         name: 'imageUploader',
@@ -39,8 +39,8 @@ const modules = {
         options: {
           upload: file => {
             return new Promise((resolve, reject) => {
-              const formData = new FormData();
-              formData.append("image", file);
+              const formData = new FormData()
+              formData.append("image", file)
               axios(
                 {
                   method: "POST",
@@ -51,11 +51,11 @@ const modules = {
                 .then(response => response.data)
                 .then(result => {
                   console.log(result);
-                  resolve(result.url);
+                  resolve(result.url)
                 })
                 .catch(error => {
-                  reject("Upload failed");
-                  console.error("Error:", error);
+                  reject("Upload failed")
+                  console.error("Error:", error)
                 });
             });
             }

@@ -1,6 +1,6 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref, watchEffect } from "vue";
-import StarIcon from "@/components/icons/StarIcon.vue";
+import { computed, onBeforeUnmount, onMounted, ref, watchEffect } from "vue"
+import StarIcon from "@/components/icons/StarIcon.vue"
 
 const props = defineProps({
   modelValue: {
@@ -33,7 +33,7 @@ const props = defineProps({
 const emit = defineEmits(["update:modelValue"]);
 
 const componentToDisplay = computed(() => {
-  return props.customSvg || StarIcon;
+  return props.customSvg || StarIcon
 });
 
 const utils = {
@@ -56,28 +56,32 @@ const rating = computed({
 });
 
 function adjustRating(e) {
-  if (props.disableClick) return;
-  const rect = this.getBoundingClientRect();
-  const { pageX } = e;
-  const relativeX = pageX - rect.left;
-  const offsetWidth = rect.width;
+  if (props.disableClick) return
+  const rect = this.getBoundingClientRect()
+  const { pageX } = e
+  const relativeX = pageX - rect.left
+  const offsetWidth = rect.width
 
-  const numberOfStars = props.numberOfStars;
+  const numberOfStars = props.numberOfStars
 
-  const result = (relativeX / offsetWidth) * numberOfStars;
+  let result = (relativeX / offsetWidth) * (numberOfStars * 2)
+  result = Math.ceil(result);
+  result = result > 0 ? result : 1
+  console.log(result)
+  rating.value = result
 
-  rating.value = result;
+  
 }
 
 const percent = computed(() => {
   const normalizedRating =
     rating.value < 0
       ? 0
-      : rating.value > props.numberOfStars
+      : rating.value > props.numberOfStars * 2
         ? props.numberOfStars
         : rating.value;
 
-  return (normalizedRating / props.numberOfStars) * 100;
+  return (normalizedRating / props.numberOfStars) * 100 / 2
 });
 
 watchEffect(() => {
