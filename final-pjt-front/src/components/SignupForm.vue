@@ -15,45 +15,51 @@
             <div class="flex flex-col">
               <label for="username">아이디</label>
               <input
-                type="text" id="username" placeholder="ID" v-model.trim="username" @keyup="validateUsername" 
+                type="text" id="username" placeholder="ID" v-model="username"
                 class="h-6  md:h-12 2xl:h-12 px-4 py-2.5 my-2 bg-blue-50 border border-2 border-slate-300 
                       focus:outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-200 
-                      disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none
-                      invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500
                       rounded-lg text-gray-950 text-xs md:text-lg 2xl:text-xl font-normal leading-tight"
+                      :class="{'border-pink-500 text-pink-600 focus:border-pink-500 focus:ring-pink-500':!isValidUsername}"
               >
               <p>{{ checkIdMessage }}</p>
             </div>
             <div class="flex flex-col">
               <label for="password1">비밀번호</label>
               <input
-                type="password" id="password1" placeholder="PASSWORD" v-model.trim="password1" @keyup="validatePassword"
+                type="password" id="password1" placeholder="PASSWORD" v-model="password1" 
                 class="h-8  md:h-12 2xl:h-12 px-4 py-2.5 my-2 bg-blue-50 border border-2 border-slate-300 
                       focus:outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-200 
-                      disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none
-                      invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500
                       rounded-lg text-gray-950 text-xs md:text-lg 2xl:text-xl font-normal leading-tight"
+                      :class="{'border-pink-500 text-pink-600 focus:border-pink-500 focus:ring-pink-500':!isValidPassword1}"
               >
-              <p>{{ checkPwMessage }}</p>
+              <p>{{ checkPwMessage1 }}</p>
             </div>
             <div class="flex flex-col">
               <label for="password2">비밀번호 확인</label>
               <input
-                type="password" id="password2" placeholder="PASSWORD" v-model.trim="password2" @keyup="SamePassword"
+                type="password" id="password2" placeholder="PASSWORD" v-model="password2"
                 class="h-8  md:h-12 2xl:h-12 px-4 py-2.5 my-2 bg-blue-50 border border-2 border-slate-300 
                       focus:outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-200 
                       disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none
-                      invalid:border-pink-500 invalid:text-pink-600 focus:invalid:border-pink-500 focus:invalid:ring-pink-500
                       rounded-lg text-gray-950 text-xs md:text-lg 2xl:text-xl font-normal leading-tight"
+                :class="{'border-pink-500 text-pink-600 focus:border-pink-500 focus:ring-pink-500':!isValidPassword2}"
               >
               <p>{{ checkPwMessage2 }}</p>
             </div>
-            <button class="w-full h-8 lg:h-10 2xl:h-14 my-5 border border-2 border-blue-700 bg-blue-900 hover:bg-blue-700 rounded-lg cursor-pointer
-                          text-center text-white text-xs lg:text-lg 2xl:text-xl font-semibold leading-tight"
+            <button :disabled="!validate" :class="{'cursor-default': !validate}" 
+              class="w-full h-8 lg:h-10 2xl:h-14 my-5 border border-2 border-blue-700 bg-blue-900 hover:bg-blue-700 rounded-lg cursor-pointer
+              text-center text-white text-xs lg:text-lg 2xl:text-xl font-semibold leading-tight
+              disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none"
             >
               Sign Up
             </button>
           </form>
+          <p>
+            아이디가 있으신가요? 
+            <span class=" mx-2 text-blue-900 font-bold">
+              <RouterLink :to="{name: 'signin'}">로그인</RouterLink>
+            </span>
+          </p>
         </div>
       </div>
     </div>
@@ -62,7 +68,7 @@
 <script setup>
 import { useUserStore } from '@/stores/user'
 import axios from 'axios';
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const store = useUserStore()
@@ -72,55 +78,76 @@ const username = ref('')
 const password1 = ref('')
 const password2 = ref('')
 const checkIdMessage = ref('')
-const checkPwMessage = ref('')
+const checkPwMessage1 = ref('')
 const checkPwMessage2 = ref('')
-const isValidUsername = ref(false)
-const isValidPassword = ref(false)
-const isValidPassword2 = ref(false)
+const isValidUsername = ref(true)
+const isValidPassword1 = ref(true)
+const isValidPassword2 = ref(true)
+
+const validate = computed(() => {
+  const isvalid = isValidPassword1.value && isValidPassword2.value && isValidUsername.value
+  const info = username.value && password1.value && password2.value
+  return isvalid && info  ? true : false
+})
 
 const signUp = function () {
-
   const payload = {
     username: username.value,
     password1: password1.value,
     password2: password2.value
   }
-  if (isValidPassword.value && isValidPassword2.value && isValidUsername.value) {
+  if (validate) {
     store.signUp(payload)
   }
 }
 
-const validatePassword = function () {
-    // 영어, 숫자를 포함하고 8자 이상
-    const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/.test(password1.value)
-    if (password1.value.length > 0 && !regex) {
-      checkPwMessage.value = '비밀번호는 알파벳과 숫자를 포함하고 8자 이상이어야합니다. (사용가능한 특수문자: @$!%*#?&)'
-      isValidPassword.value = false
-    } else {
-      if (password1.value === '') {
-        checkPwMessage.value = ''
-        isValidPassword.value = false
-      } else {
-        checkPwMessage.value = '유효한 비밀번호입니다.'
-        isValidPassword.value = true
-      }
-    }
-}
-
-const SamePassword = function () {
-  if (password2.value.length > 0) {
-    if (password1.value !== password2.value) {
+watch(password1, (inputValue) => {
+  const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/.test(inputValue)
+  if (inputValue === '') {
+    checkPwMessage1.value = '비밀번호를 입력해주세요.'
+    isValidPassword1.value = false
+  } else {
+    if ((password2.value !== '') && (isValidPassword2.value === true)) {
       checkPwMessage2.value = '비밀번호가 일치하지 않습니다.'
       isValidPassword2.value = false
-    } else {
-      checkPwMessage2.value = '비밀번호가 일치합니다.'
-      isValidPassword2.value = true
     }
-  } if (password1.value == '' || password2.value == '') {
-    checkPwMessage2.value = ''
+    if (inputValue.includes(' ')) {
+      checkPwMessage1.value = '비밀번호는 공백을 포함할 수 없습니다.'
+      isValidPassword1.value = false
+    } else if (!regex) {
+      checkPwMessage1.value = '비밀번호는 알파벳과 숫자를 포함하고 8자 이상이어야합니다. (사용가능한 특수문자: @$!%*#?&)'
+      isValidPassword1.value = false
+    } else {
+      checkPwMessage1.value = '유효한 비밀번호입니다.'
+      isValidPassword1.value = true
+      if ((inputValue === password2.value) && (isValidPassword2.value === false)) {
+        checkPwMessage2.value = '비밀번호가 일치합니다.'
+        isValidPassword2.value = true
+      }
+    }
+  }
+})
+
+watch(password2, (inputValue) => {
+  const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/.test(password1.value)
+  if (!regex) {
+    checkPwMessage2.value = '유효한 비밀번호를 입력해주세요.'
+    isValidPassword2.value = false
+    isValidPassword1.value = false
+    if (password1.value === '') {
+      checkPwMessage1.value = '비밀번호를 입력해주세요.'
+    }
+  } else if (inputValue === '') {
+    checkPwMessage2.value = '비밀번호를 확인해주세요'
+    isValidPassword2.value = false
+  } else if (inputValue === password1.value) {
+    checkPwMessage2.value = '비밀번호가 일치합니다.'
+    isValidPassword2.value = true
+  } else {
+    checkPwMessage2.value = '비밀번호가 일치하지 않습니다.'
     isValidPassword2.value = false
   }
-} 
+})
 
 const ExistsId = function () {
   axios({
@@ -145,21 +172,23 @@ const ExistsId = function () {
     })
 }
 
-const validateUsername = function () {
-  const regex  = /^[A-Za-z\d]*$/.test(username.value)
-  if (!username.value) {
-    checkIdMessage.value = ''
+watch (username, (inputValue) => {
+  const regex  = /^[A-Za-z\d_]*$/.test(inputValue)
+  if (inputValue === '') {
+    checkIdMessage.value = '아이디를 입력해주세요.'
+    isValidUsername.value = false
+  } else if (inputValue.includes(' ')) {
+    checkIdMessage.value = '아이디는 공백을 포함할 수 없습니다.'
+    isValidUsername.value = false
   } else if (!regex) {
-    checkIdMessage.value = '알파벳과 숫자를 제외한 문자는 사용할 수 없습니다.'
+    checkIdMessage.value = '아이디는 알파벳과 숫자만 사용가능합니다.'
+    isValidUsername.value = false
   } else if (username.value.length < 4) {
     checkIdMessage.value = '4자 이상 입력해주세요.'
+    isValidUsername.value = false
   } else {
     ExistsId()
   }
-}
-
-watch(password1, () => {
-  SamePassword()
 })
 
 const goMain = function () {

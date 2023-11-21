@@ -29,14 +29,12 @@
       </div>
     </div> -->
     <div class="w-screen h-screen bg-[url('@/assets/images/loginbg.jpg')] bg-cover">
-      <div class="w-screen h-screen bg-blue-950 bg-opacity-80">
-        <div class="w-screen h-screen grid place-content-center">
-          <div v-if="route.name === 'signin'">
-            <SigninForm />
-          </div>
-          <div v-if="route.name === 'signup'">
-            <SignupForm />
-          </div>
+      <div class="w-screen h-screen bg-blue-950 bg-opacity-80 grid place-content-center">
+        <div v-if="route.name === 'signin'">
+          <SigninForm />
+        </div>
+        <div v-if="route.name === 'signup'">
+          <SignupForm />
         </div>
       </div>
     </div>
