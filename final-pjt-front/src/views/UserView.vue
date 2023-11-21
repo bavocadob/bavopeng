@@ -1,5 +1,5 @@
 <template>
-    <div class="w-screen h-screen bg-[url('@/assets/images/loginbg.jpg')] bg-cover">
+    <!-- <div class="w-screen h-screen bg-[url('@/assets/images/loginbg.jpg')] bg-cover">
       <div class="w-screen h-screen px-10 bg-blue-950 bg-opacity-90 flex flex-col justify-center items-center">
         <div class="w-2/3 lg:w-2/5 h-4/5 flex flex-col justify-center md:justify-evenly items-center">
           <img @click="goMain" class="mb-5 w-2/3 sm:w-1/2 cursor-pointer" src="@/assets/images/Logo2.png" alt="logo">
@@ -27,16 +27,31 @@
           </form>
         </div>
       </div>
+    </div> -->
+    <div class="w-screen h-screen bg-[url('@/assets/images/loginbg.jpg')] bg-cover">
+      <div class="w-screen h-screen bg-blue-950 bg-opacity-80">
+        <div class="w-screen h-screen grid place-content-center">
+          <div v-if="route.name === 'signin'">
+            <SigninForm />
+          </div>
+          <div v-if="route.name === 'signup'">
+            <SignupForm />
+          </div>
+        </div>
+      </div>
     </div>
 </template>
 
 <script setup>
 import { useUserStore } from '../stores/user'
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+import SigninForm from '@/components/SigninForm.vue'
+import SignupForm from '@/components/SignupForm.vue'
 
 const store = useUserStore()
 const router = useRouter()
+const route = useRoute()
 
 const username = ref(null)
 const password = ref(null)
