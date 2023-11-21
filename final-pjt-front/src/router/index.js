@@ -4,6 +4,7 @@ import MovieDetailView from '@/views/MovieDetailView.vue'
 import MainView from '@/views/MainView.vue'
 import UserView from '@/views/UserView.vue'
 import MovieView from '@/views/MovieView.vue'
+import ProfileView from '@/views/ProfileView.vue'
 
 
 const router = createRouter({
@@ -38,6 +39,11 @@ const router = createRouter({
       path: '/movie/:movieId',
       name: 'movieDetail',
       component: MovieDetailView
+    },
+    {
+      path: '/profile/:username',
+      name: 'profile',
+      component: ProfileView
     },
   ]
 })

@@ -32,6 +32,7 @@
             <RouterLink :to="{ name: 'signin' }">로그인</RouterLink>
             <RouterLink :to="{ name: 'signup' }">회원가입</RouterLink>
             <img class="w-[50px] h-[50px] left-[1150px] top-0 rounded-full" src="https://via.placeholder.com/50x50" />
+            <RouterLink :to="{name: 'profile', params: {username: 'test01'}}">프로필</RouterLink>
         </div>
       </nav>
       <div class="min-h-screen relative">
