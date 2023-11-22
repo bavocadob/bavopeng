@@ -26,15 +26,15 @@
                   <p class="text-sm text-gray-500 mb-4">{{ movie.original_title }}</p>
                 </div>
               </div>
-
-              <div class="flex items-center mb-20">
-                <div class="mr-4">
+              <div class="flex items-center mb-4">
+                <div class="mr-1">
                   <p>{{ movie.release_date }}</p>
                 </div>
                 <div class="separator mx-4"></div>
-                <p class="text-lg mr-4">{{ movie.runtime }} 분</p>
-                <div class="separator mx-4"></div>
-                <div class="flex items-center">
+                <p class="text-base">{{ movie.runtime }} 분</p>
+                
+              </div>
+              <div class="flex items-center mb-5">
                   <span
                     class="mr-2 bg-gray-300 py-1 px-2 rounded-full text-sm font-semibold"
                     v-for="genre in movie.genres"
@@ -43,8 +43,6 @@
                     {{ genre.name }}
                   </span>
                 </div>
-              </div>
-
               <div class="flex flex-col justify-between">
                 <div class="flex justify-between mb-4">
                   <div class="flex items-center">
@@ -60,15 +58,19 @@
                     </p>
                   </div>
                 </div>
-                <div class="flex justify-between">
-                  <div class="flex items-center">
-                    <button class="font-semibold border bg-yellow-500 border-yellow-500 text-gray-900 py-2 px-6 rounded-md cursor-pointer hover:bg-yellow-600 mr-2">
-                      <i class="fas fa-thumbs-up"></i> 좋아요
-                    </button>
-                    <button class="font-semibold border bg-yellow-500 border-yellow-500 text-gray-900 py-2 px-6 rounded-md cursor-pointer hover:bg-yellow-600">
-                      <i class="fas fa-thumbs-down"></i> 싫어요
-                    </button>
-                  </div>
+                <div class="flex justify-between space-x-4">
+                  <button class="flex flex-col items-center justify-center py-2 px-6 rounded-md cursor-pointer">
+                    <i class="fas fa-thumbs-up text-3xl text-gray-500 transform transition-transform duration-200 hover:scale-125 hover:text-gray-600"></i>
+                    <span class="text-xs mt-1">좋아요</span>
+                  </button>
+                  <button class="flex flex-col items-center justify-center py-2 px-6 rounded-md cursor-pointer">
+                    <i class="fas fa-thumbs-down text-3xl text-gray-500 transform transition-transform duration-200 hover:scale-125 hover:text-gray-600"></i>
+                    <span class="text-xs mt-1">싫어요</span>
+                  </button>
+                  <button class="flex flex-col items-center justify-center py-2 px-6 rounded-md cursor-pointer">
+                    <i class="fas fa-heart text-3xl text-gray-500 transform transition-transform duration-200 hover:scale-125 hover:text-gray-600"></i>
+                    <span class="text-xs mt-1">보고싶어요</span>
+                  </button>
                 </div>
               </div>
 

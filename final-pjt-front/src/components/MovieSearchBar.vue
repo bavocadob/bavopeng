@@ -5,11 +5,13 @@
       <input 
         v-model="searchTerm" 
         @input="searchMovie"
+        @blur="active=false"
+        @focus="active=true"
         placeholder="Search" 
         class="w-full py-1 px-2 outline-none"
       >
     </div>
-    <div class="absolute w-full mt-1 bg-white shadow" v-if="searchResults">
+    <div class="absolute w-full mt-1 bg-white shadow" v-if="active">
       <a 
         class="p-2 block hover:bg-gray-200 cursor-pointer text-sm"
         v-for="movie in searchResults"
@@ -31,7 +33,7 @@ import { useUserStore } from '@/stores/user'
 const searchTerm = ref('')
 const searchResults = ref([])
 const store = useUserStore()
-
+const active = ref(false)
 
 const searchMovie = debounce(function(event) {
   if (searchTerm.value.trim()){
