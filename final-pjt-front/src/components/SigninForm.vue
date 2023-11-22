@@ -6,7 +6,7 @@
           <input
             type="text"  placeholder="ID" v-model="username"
             class="w-full h-8 md:h-12 2xl:h-12 px-4 py-2.5 my-2 bg-blue-50 border border-2 border-slate-300 
-                  focus:outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-200 
+                  focus:outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-200 text-black 
                   disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none
                   rounded-lg text-gray-950 text-xs md:text-lg 2xl:text-xl font-normal leading-tight"
             :class="{'border-pink-500 text-pink-600 focus:border-pink-500 focus:ring-pink-500':usernameRequired}"
@@ -15,7 +15,7 @@
           <input
             type="password" placeholder="PASSWORD" v-model="password"
             class="w-full h-8 md:h-12 2xl:h-12 px-4 py-2.5 my-2 bg-blue-50 border border-2 border-slate-300 
-                  focus:outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-200 
+                  focus:outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-200 text-black
                   disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none
                   rounded-lg text-gray-950 text-xs md:text-lg 2xl:text-xl font-normal leading-tight"
             :class="{'border-pink-500 text-pink-600 focus:border-pink-500 focus:ring-pink-500':passwordRequired}"
@@ -56,12 +56,16 @@ const failedLogin = ref(false)
 watch(username, (inputValue) => {
   if (inputValue === '') {
     usernameRequired.value = true
+  } else {
+    usernameRequired.value = false
   }
 })
 
 watch(password, (inputValue) => {
   if (inputValue === '') {
     passwordRequired.value = true
+  } else {
+    passwordRequired.value = false
   }
 })
 

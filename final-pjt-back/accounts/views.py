@@ -65,6 +65,7 @@ def follower(request, user_pk):
     return Response(serializer.data)
 
 
+# 중복 아이디 확인
 @api_view(['GET'])
 def exists_id(request):
     username = request.GET.get('username', '')
@@ -74,6 +75,17 @@ def exists_id(request):
         return Response({'result':False})
     
 
+# 중복 닉네임 확인
+@api_view(['GET'])
+def exists_nickname(request):
+    nickname = request.GET.get('nickname', '')
+    if Profile.objects.all().filter(nickname=nickname).exists():
+        return Response({'result':True})
+    else:
+        return Response({'result':False})
+    
+
+# 로그인 시 vue에서 유저정보 받아오기
 @api_view(['Get'])
 @permission_classes([IsAuthenticated])
 def get_user_info(request):

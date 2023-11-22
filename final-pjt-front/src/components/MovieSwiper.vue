@@ -2,7 +2,7 @@
   <div>
     <div>
       <swiper
-        :slides-per-view="7"
+        :slides-per-view="6"
         :space-between="30"
       >
         <swiper-slide v-for="movie in movies" :key="movie.id">

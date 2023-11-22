@@ -45,6 +45,11 @@ const router = createRouter({
       name: 'profile',
       component: ProfileView
     },
+    {
+      path: '/profile/:username/modify',
+      name: 'profileModify',
+      component: ProfileView
+    },
   ]
 })
 

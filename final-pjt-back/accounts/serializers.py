@@ -45,7 +45,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(read_only=True)
     class Meta:
         model = User
-        fields = ('id', 'profile',)
+        fields = ('id', 'username', 'profile',)
 
 
 # 사용자 프로필 로드용 serializer

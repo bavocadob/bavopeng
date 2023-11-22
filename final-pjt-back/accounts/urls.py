@@ -6,5 +6,6 @@ urlpatterns = [
     path('following/<int:user_pk>/', views.following),
     path('follower/<int:user_pk>/', views.follower),
     path('username/', views.exists_id),
+    path('nickname/', views.exists_nickname),
     path('userinfo/', views.get_user_info),
 ]
