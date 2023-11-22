@@ -1,8 +1,9 @@
 <template>
   <div>
-    <div class="w-screen min-h-screen bg-blue-950">
+    <div class="w-screen bg-blue-950">
+      <div class="w-screen bg-black bg-opacity-10">
       <nav
-        v-show="route.name !== 'loginView'" 
+        v-show="!fullScreen" 
         class="w-screen h-20 fixed top-0 bg-blue-950 flex justify-between items-center z-50"
       >
         <div class="w-[500px] ms-5 flex justify-around items-center">
@@ -27,16 +28,18 @@
                       w-[340px] h-10 bg-slate-900 rounded-[100px] border border-2 border-blue-900"
               >
             </form>
-            <RouterLink :to="{ name: 'loginView' }">로그인</RouterLink>
-            <RouterLink :to="{ name: 'signUpView' }">회원가입</RouterLink>
+            <RouterLink :to="{ name: 'signin' }">로그인</RouterLink>
+            <RouterLink :to="{ name: 'signup' }">회원가입</RouterLink>
             <img class="w-[50px] h-[50px] left-[1150px] top-0 rounded-full" src="https://via.placeholder.com/50x50" />
+            <RouterLink :to="{name: 'profile', params: {username: 'test01'}}">프로필</RouterLink>
         </div>
       </nav>
-      <div class="w-screen bg-black bg-opacity-10">
-        <div class="w-9/12 min-h-screen mx-auto mt-20 pt-5 mb-20">
+      <div class="min-h-screen relative">
+        <div :class="{'w-9/12 mx-auto py-28': !fullScreen}">
           <RouterView />
         </div>
-        <footer class="w-screen h-20 bottom-0 border border-black"></footer>
+        <footer v-show="!fullScreen" class="w-screen h-20 absolute bottom-0 left-0 border border-black"></footer>
+      </div>
       </div>
     </div>
   </div>
@@ -45,6 +48,7 @@
 
 
 <script setup>
+import { ref, watch, computed } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import { useUserStore } from './stores/user'
 import test from './views/test.vue'
@@ -60,6 +64,11 @@ const goMain = function () {
 const logout = function () {
   store.logout()
 }
+
+const fullScreen = computed(() => {
+  const checkRoutes = ['signin', 'signup']
+  return checkRoutes.includes(route.name)
+})
 
 </script>
 

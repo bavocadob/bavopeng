@@ -36,8 +36,8 @@ defineProps({
 <style scoped>
 
 .movie-image {
-  /* width: 100%;
-  height: 18rem; */
+  width: 100%;
+  height: 18rem;
 }
 
 </style>
