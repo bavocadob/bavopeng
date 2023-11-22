@@ -12,8 +12,7 @@
             <RouterLink :to="{ name: 'movieView' }">Movie</RouterLink>
           </div>
           <div class="text-center align-top text-white text-base font-semibold leading-normal">
-            Coummunity
-            <!-- <RouterLink>Community</RouterLink> -->
+            <RouterLink :to="{ name: 'community' }">Community</RouterLink> 
           </div>
           <div class="text-center align-top text-white text-base font-semibold leading-normal">
             Wishlist

@@ -27,13 +27,12 @@ def movie_detail(request, movie_pk):
 def movie_review(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
     
-    if request.user.is_authenticated and request.method == 'POST':  # 게시글에 대한 리뷰 작성
+    if request.user.is_authenticated and request.method == 'POST':  # 영화에 대한 리뷰 작성
         serializer = ReviewSerializer(data=request.data)
-        
         if serializer.is_valid(raise_exception=True):
             serializer.save(movie=movie, user=request.user)
             return Response(serializer.data)
-    elif request.method == 'GET':  # 게시글에 대한 리뷰 조회
+    elif request.method == 'GET':  # 영화에 대한 리뷰 조회
         reviews = movie.review_set.all()
         serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data)
@@ -90,22 +89,6 @@ def movie_wish(request, movie_pk):
         else:
             movie.wished_by.add(user)
         return Response(status=status.HTTP_200_OK)
-    
-
-@api_view(['GET','POST'])
-def movie_review(request, movie_pk):
-    movie = get_object_or_404(Movie, pk=movie_pk)
-    
-    if request.method == 'POST':  # 게시글에 대한 리뷰 작성
-        serializer = ReviewSerializer(data=request.data)
-        
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(movie=movie, user=request.user)
-            return Response(serializer.data)
-    elif request.method == 'GET':  # 게시글에 대한 리뷰 조회
-        reviews = movie.review_set.all()
-        serializer = ReviewSerializer(reviews, many=True)
-        return Response(serializer.data)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -131,8 +114,6 @@ def movie_review_detail(request, review_pk):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def movie_review_pages(request, movie_pk, page):
-
-    
     PAGE_SIZE = 10
     movie = get_object_or_404(Movie, pk=movie_pk)
     # 정렬 방식을 URL 쿼리 파라미터에서 가져옵니다.
@@ -175,11 +156,16 @@ def movie_review_like(request, review_pk):
     user = request.user
  
     if request.method == 'POST':
-        if review.liked_users.filter(pk=user.pk).exists():
-            review.liked_users.remove(user)
+        if review.liked_by.filter(pk=user.pk).exists():
+            review.liked_by.remove(user)
         else:
-            review.liked_users.add(user)
-        return Response(status=status.HTTP_200_OK)
+            review.liked_by.add(user)
+        
+        result = {
+            'like_cnt' : review.liked_by.count(),
+            'is_like' : review.liked_by.filter(pk=user.pk).exists()
+        }
+        return Response(result, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
@@ -194,7 +180,7 @@ def recommend_by_movies(request):
     #     params = {
             
     #     }
-        
+         
     #     movie_id = review.movie_id
     #     recommend['movie_list'].append(movie_id)
 

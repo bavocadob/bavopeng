@@ -45,19 +45,27 @@
                 </div>
               </div>
 
-              <div class="flex justify-between">
-                <div class="flex items-center">
-               <StarRatingVue v-model="movie.rating_avg" :disableClick="true" :starSize="34" />
-
-                  <p class="text-lg font-bold ml-1">
-                    {{ Math.round(movie.rating_avg * 10) / 10 }}
-                  </p>
+              <div class="flex flex-col justify-between">
+                <div class="flex justify-between mb-4">
+                  <div class="flex items-center">
+                    <StarRatingVue v-model="movie.rating_avg" :disableClick="true" :starSize="34" />
+                    <p class="text-lg font-bold ml-1">
+                      {{ Math.round(movie.rating_avg * 10) / 10 }}
+                    </p>
+                  </div>
                 </div>
-
-                <div class="flex items-center font-semibold bg-blue-500 border border-blue-500 text-white py-2 px-6 rounded-md cursor-pointer hover:bg-blue-600">
-                  리뷰 쓰기
+                <div class="flex justify-between">
+                  <div class="flex items-center">
+                    <button class="font-semibold border bg-yellow-500 border-yellow-500 text-gray-900 py-2 px-6 rounded-md cursor-pointer hover:bg-yellow-600 mr-2">
+                      <i class="fas fa-thumbs-up"></i> 좋아요
+                    </button>
+                    <button class="font-semibold border bg-yellow-500 border-yellow-500 text-gray-900 py-2 px-6 rounded-md cursor-pointer hover:bg-yellow-600">
+                      <i class="fas fa-thumbs-down"></i> 싫어요
+                    </button>
+                  </div>
                 </div>
               </div>
+
 
             </div>
           </div>
@@ -66,7 +74,7 @@
           <div class="border-b border-gray-400 pb-8 mb-8">
             <h2 class="text-xl font-bold mb-4">줄거리</h2>
 
-            <p class="text-lg font-light">{{ movie.overview }}</p>
+            <p class="text-base font-light">{{ movie.overview }}</p>
           </div>
 
           <div v-if="movie.trailer" class="border-b border-gray-400 pb-8 mb-8">
@@ -88,10 +96,13 @@
         </div>
         <div class="p-8 bg-gray-200 shadow-sm rounded-lg">
           <h1 class="text-xl font-bold mb-4">리뷰</h1>
-          <MovieDetailMyReview />
-          <MovieDetailReview :reviews="movie.review_set" />
+          <MovieDetailMyReview :review="myReview"/>
+          <MovieDetailReview :reviews="movie.review_set?.slice(0, 3)" />
+          <router-link v-if="movie.review_set?.length > 3" :to="{ name: 'reviewList', params: { movieId: movie.id }}">
+            리뷰 {{ movie.review_set?.length }}개 모두 보기 
+            <i class="fas fa-arrow-right"></i>
+          </router-link>
         </div>
-        
       </div>
     </div>
   </section>
@@ -106,12 +117,13 @@ import MovieDetailMyReview from '@/components/MovieDetailMyReview.vue'
 
 import axios from 'axios'
 import { useRoute } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
+import { useUserStore } from '@/stores/user'
 
 const route = useRoute()
 const movieId = route.params.movieId
 const movie = ref({})
-
+const store = useUserStore()
 
 onMounted(() => {
   axios({
@@ -119,12 +131,16 @@ onMounted(() => {
     url : `http://127.0.0.1:8000/api/v1/movie/${movieId}/`
   })
   .then((res) => {
-    console.log(res.data)
     movie.value = res.data
   })
   .catch((err) => console.log(err))
+
 })
 
+
+const myReview = computed(() => {
+  return movie.review_set?.find(review => review.user.id === store.userInfo.id);
+})
 
 
 </script>
