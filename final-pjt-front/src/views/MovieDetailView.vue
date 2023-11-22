@@ -1,6 +1,6 @@
 <template>
   <section>
-    <div class="flex">
+    <div class="flex justify-center">
       <div class="w-3/5 mr-8">
         <div class="mb-8 bg-gray-200 shadow-sm rounded-lg">
           <div

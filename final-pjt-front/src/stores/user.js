@@ -101,5 +101,5 @@ export const useUserStore = defineStore('user', () => {
       })
   }
   
-  return { API_URL, signUp, login, logout, token, isLogin, userInfo}
+  return { API_URL, signUp, login, logout, token, isLogin, userInfo, getUserInfo}
 }, {persist: true})

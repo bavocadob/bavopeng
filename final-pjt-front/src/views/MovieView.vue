@@ -1,10 +1,13 @@
 <template>
-<h1>영화 목록</h1>
-
-<p>현재 상영중인 영화</p>
-<MovieSwiper :movies="nowShowing" />
-<p>개봉 예정 영화</p>
-<MovieSwiper :movies="upcoming" />
+<!-- <h1>영화 목록</h1> -->
+<div class="bg-slate-700 m-3 p-4 text-white rounded-lg">
+  <p>현재 상영중인 영화</p>
+  <MovieSwiper :movies="nowShowing" />
+</div>
+<div class="bg-slate-700 m-3 p-3 text-white rounded-lg">
+  <p>개봉 예정 영화</p>
+  <MovieSwiper :movies="upcoming" />
+</div>
 </template>
 
 <script setup>
