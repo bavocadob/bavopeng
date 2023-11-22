@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from movies.models import Movie, Review
 from articles.models import Article, Comment
 from .models import Profile
+from collections import Counter
 
 
 class CustomRegisterSerializer(RegisterSerializer):
@@ -54,42 +55,50 @@ class UserDetailSerializer(serializers.ModelSerializer):
             class Meta:
                 model = Movie
                 fields = ('id', 'title', 'poster_path', 'rating_avg',)
-
-    class ArticleSerializer(serializers.ModelSerializer):
-        liked_cnt = serializers.IntegerField(source='liked_by.count', read_only=True)
-
-        class Meta:
-            model = Article
-            fields = ('id', 'title', 'created_at', 'liked_cnt')
     
     class ReviewSerializer(serializers.ModelSerializer):
-        liked_cnt = serializers.IntegerField(source='liked_by.count', read_only=True)
+        user = UserProfileSerializer(read_only=True)
 
         class Meta:
             model = Review
-            fields = ('id', 'content', 'rating', 'created_at', 'liked_cnt')
-    
-    class CommentSerializer(serializers.ModelSerializer):
-        liked_cnt = serializers.IntegerField(source='liked_by.count', read_only=True)
+            fields = '__all__'
 
-        class Meta:
-            model = Comment
-            fields = ('id', 'content', 'created_at', 'liked_cnt')
+    # class ArticleSerializer(serializers.ModelSerializer):
+    #     liked_cnt = serializers.IntegerField(source='liked_by.count', read_only=True)
+
+    #     class Meta:
+    #         model = Article
+    #         fields = ('id', 'title', 'created_at', 'liked_cnt')
+    
+    # class CommentSerializer(serializers.ModelSerializer):
+    #     liked_cnt = serializers.IntegerField(source='liked_by.count', read_only=True)
+
+    #     class Meta:
+    #         model = Comment
+    #         fields = ('id', 'content', 'created_at', 'liked_cnt')
 
 
     followings_cnt = serializers.IntegerField(source='followings.count', read_only=True)
     followers_cnt = serializers.IntegerField(source='followers.count', read_only=True)
     liked_movies = MovieSerializer(many=True, read_only=True)
     wished_movies = MovieSerializer(many=True, read_only=True)
-    liked_articles = ArticleSerializer(many=True, read_only=True)
     review_set = ReviewSerializer(many=True, read_only = True)
-    article_set = ArticleSerializer(many=True, read_only = True)
-    comment_set = CommentSerializer(many=True, read_only = True)
+    genres_like = serializers.SerializerMethodField()
+    # liked_articles = ArticleSerializer(many=True, read_only=True)
+    # article_set = ArticleSerializer(many=True, read_only = True)
+    # comment_set = CommentSerializer(many=True, read_only = True)
 
     class Meta:
         model = User
-        fields = ('id', 'followings_cnt', 'followers_cnt', 
-                  'liked_movies', 'wished_movies', 'liked_articles', 'wished_movies', 'review_set', 'article_set', 'comment_set')
+        fields = ('id', 'followings_cnt', 'followers_cnt', 'followers',
+                  'liked_movies', 'wished_movies', 'review_set', 'genres_like')
+
+    def get_genres_like(self, obj):
+        movies = obj.liked_movies.all()
+        genres = [genre.name for movie in movies for genre in movie.genres.all()]
+        genre_counter = Counter(genres)
+        top_genres = genre_counter.most_common(3)
+        return top_genres
 
 
 # 프로필 조회
