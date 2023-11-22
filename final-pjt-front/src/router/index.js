@@ -57,6 +57,8 @@ const router = createRouter({
       path: '/movie/:movieId/reviews',
       name: 'reviewList',
       component: MovieReviewListView
+    },
+    {
       path: '/profile/:username',
       name: 'profile',
       component: ProfileView
