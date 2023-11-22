@@ -4,7 +4,7 @@
       <div>
         <h1 class="text-4xl font-bold text-white">Community</h1>
         <p class="text-lg text-white mt-2">
-          커뮤니티 공간에서 자유롭게 이야기를 나눠보세요
+          지금부터 서로 죽여라
         </p>
       </div>
   
@@ -14,13 +14,13 @@
         </button>
       </div>
     </div>
-    <Board />
+    <CommunityBody />
   </section>
   </template>
   
 
 <script setup>
-import Board from '@/components/Board.vue'
+import CommunityBody from '@/components/CommunityBody.vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 

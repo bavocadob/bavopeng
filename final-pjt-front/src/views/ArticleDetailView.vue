@@ -23,16 +23,16 @@
 
           <div class="flex justify-between items-center mb-6">
             <div class="flex items-center">
-              <img v-if="store.userInfo.profile.profile_img"
-                :src="store.userInfo.profile.profile_img"
+              <img v-if="article.user?.profile.profile_img"
+                :src="article.user?.profile.profile_img"
                 class="w-8 h-8 rounded-full mr-4"
               />
               <img v-else
-                src="@/assets/images/anonymous.png"
+                src="@/assets/images/anonymous_square.png"
                 class="w-8 h-8 rounded-full mr-4"
               >
               <div>
-                <p class="font-bold">{{ store.userInfo.profile.nickname }}</p>
+                <p class="font-bold">{{ article.user?.profile.nickname }}</p>
                 <p class="text-sm text-gray-500">{{ formatDate(article.created_at) }}</p>
               </div>
             </div>
@@ -70,12 +70,8 @@
         <!-- 코멘트 -->
         <div class="bg-white shadow rounded-lg p-6">
           <CommentWrite />
+          <CommentList />
 
-          <!-- <Comment
-            v-for="comment in comments"
-            :key="comment.id"
-            :commentId="comment.id"
-          /> -->
         </div>
         <!--  -->
       </div>
@@ -93,6 +89,7 @@ import { useUserStore } from '@/stores/user'
 import { useRoute } from 'vue-router'
 import CommunityDropdown from '@/components/CommunityDropdown.vue'
 import CommentWrite from '@/components/CommentWrite.vue'
+import CommentList from '@/components/CommentList.vue'
 
 const store = useUserStore()
 const route = useRoute()
@@ -102,7 +99,6 @@ const article = ref({})
 const likeCnt = ref(0)
 const dislikeCnt = ref(0)
 const commentCnt = ref(0)
-const comments = ref([])
 const isLike = ref(true)
 const isDislike = ref(false)
 const isDropdownOpen = ref(false)
@@ -114,7 +110,6 @@ onMounted(() => {
     url : `${store.API_URL}/api/v1/article/${route.params.articleId}`
   })
   .then((res) => {
-    console.log(res)
     article.value = res.data
     likeCnt.value = res.data.like_cnt
     dislikeCnt.value = res.data.dislike_cnt
@@ -124,6 +119,8 @@ onMounted(() => {
     // isDislike.value
   })
   .catch((err) => console.log(err))
+
+  
 })
 
 
@@ -136,7 +133,7 @@ const likeArticle = function() {
     }
   })
   .then((res) => {
-    console.log(res)
+    // console.log(res)
     isLike.value = res.data.is_like
     isDislike.value = res.data.is_dislike
     likeCnt.value = res.data.like_cnt
@@ -155,7 +152,7 @@ const dislikeArticle = function() {
     }
   })
   .then((res) => {
-    console.log(res)
+    // console.log(res)
     isLike.value = res.data.is_like
     isDislike.value = res.data.is_dislike
     likeCnt.value = res.data.like_cnt
