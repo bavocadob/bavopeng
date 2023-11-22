@@ -5,16 +5,16 @@
     <div v-else class="flex flex-col items-center justify-center h-64">
         <p class="mb-4 text-sm text-gray-500">아직 리뷰를 남기지 않으셨어요.</p>
         <p class="mb-4 text-sm text-gray-500">작품에 대한 감상을 기록해보세요!</p>
-        <button class="px-4 py-2 bg-blue-900 font-medium text-white rounded">리뷰 작성하기</button>
+        <button @click="openModal" class="px-4 py-2 bg-blue-900 font-medium text-white rounded">리뷰 작성하기</button>
     </div>
   </div>
 </template>
 
 <script setup>
 import ReviewCard from '@/components/ReviewCard.vue'
-import { useUserStore } from '@/stores/user'
 
-const store = useUserStore()
+
+const emit = defineEmits(['openModal'])
 
 const props = defineProps({
   review: {
@@ -29,6 +29,10 @@ const formatDate = (dateStr) => {
   const day = ("0" + date.getDate()).slice(-2)
   
   return `${year}-${month}-${day}`
+}
+
+const openModal = function() {
+  emit('openModal')
 }
 
 </script>

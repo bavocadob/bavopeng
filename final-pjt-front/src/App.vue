@@ -4,7 +4,7 @@
       <div class="w-screen bg-black bg-opacity-10">
       <nav
         v-show="!fullScreen" 
-        class="w-screen h-20 fixed top-0 bg-blue-950 flex justify-between items-center z-50"
+        class="w-screen h-20 fixed top-0 bg-blue-950 flex justify-between items-center z-20"
       >
         <div class="w-[500px] ms-5 flex justify-around items-center">
           <img @click="goMain" alt="main" class="cursor-pointer" src="@/assets/images/Logo2.svg" width="150" height="50" >
@@ -21,13 +21,7 @@
           <button @click="logout">로그아웃</button>
         </div>
         <div class="w-[540px] h-12 me-12 justify-end items-center gap-4 inline-flex">
-            <form>
-              <input 
-                type="text" id="search" placeholder="검색"
-                class="text-white text-base font-medium px-4
-                      w-[340px] h-10 bg-slate-900 rounded-[100px] border border-2 border-blue-900"
-              >
-            </form>
+            <MovieSearchBar />
             <RouterLink :to="{ name: 'signin' }">로그인</RouterLink>
             <RouterLink :to="{ name: 'signup' }">회원가입</RouterLink>
             <img class="w-[50px] h-[50px] left-[1150px] top-0 rounded-full" src="https://via.placeholder.com/50x50" />
@@ -51,6 +45,7 @@
 import { ref, watch, computed } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import { useUserStore } from './stores/user'
+import MovieSearchBar from '@/components/MovieSearchBar.vue'
 import test from './views/test.vue'
 
 const route = useRoute()

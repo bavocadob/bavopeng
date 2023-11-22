@@ -48,7 +48,13 @@
               <div class="flex flex-col justify-between">
                 <div class="flex justify-between mb-4">
                   <div class="flex items-center">
-                    <StarRatingVue v-model="movie.rating_avg" :disableClick="true" :starSize="34" />
+                    <StarRatingVue 
+                      v-model="movie.rating_avg"
+                      :disableClick="true"
+                      :starSize="34"
+                      :starColor="'#4263EB'"
+                      :numberOfStars="5"
+                      />
                     <p class="text-lg font-bold ml-1">
                       {{ Math.round(movie.rating_avg * 10) / 10 }}
                     </p>
@@ -96,7 +102,16 @@
         </div>
         <div class="p-8 bg-gray-200 shadow-sm rounded-lg">
           <h1 class="text-xl font-bold mb-4">리뷰</h1>
-          <MovieDetailMyReview :review="myReview"/>
+          <MovieDetailMyReview
+            :review="myReview"
+            @open-modal="isModalOpen=true"
+          />
+          
+          <MovieReviewModal
+            v-if="isModalOpen" :movie="movie"
+            @close-modal="isModalOpen=false"
+            @update-review="updateMovieData"
+          />
           <MovieDetailReview :reviews="movie.review_set?.slice(0, 3)" />
           <router-link v-if="movie.review_set?.length > 3" :to="{ name: 'reviewList', params: { movieId: movie.id }}">
             리뷰 {{ movie.review_set?.length }}개 모두 보기 
@@ -113,6 +128,7 @@ import StarRatingVue from '@/components/StarRating.vue'
 import ActorSwiper from '@/components/ActorSwiper.vue'
 import MovieDetailReview from '@/components/MovieDetailReview.vue'
 import MovieDetailMyReview from '@/components/MovieDetailMyReview.vue'
+import MovieReviewModal from '@/components/MovieReviewModal.vue'
 
 
 import axios from 'axios'
@@ -121,11 +137,24 @@ import { onMounted, ref, computed } from 'vue'
 import { useUserStore } from '@/stores/user'
 
 const route = useRoute()
-const movieId = route.params.movieId
-const movie = ref({})
 const store = useUserStore()
+const movieId = route.params.movieId
+
+const isModalOpen = ref(false)
+const movie = ref({})
+const reviews =ref([])
+
 
 onMounted(() => {
+  updateMovieData()
+})
+
+
+const myReview = computed(() => {
+  return movie.value.review_set?.find(review => review.user.id === store.userInfo.id);
+})
+
+const updateMovieData = function() {
   axios({
     method : 'GET',
     url : `http://127.0.0.1:8000/api/v1/movie/${movieId}/`
@@ -134,13 +163,7 @@ onMounted(() => {
     movie.value = res.data
   })
   .catch((err) => console.log(err))
-
-})
-
-
-const myReview = computed(() => {
-  return movie.review_set?.find(review => review.user.id === store.userInfo.id);
-})
+}
 
 
 </script>

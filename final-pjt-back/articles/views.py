@@ -114,7 +114,7 @@ def comment_list(request, article_pk, page):
     article = get_object_or_404(Article, pk=article_pk)
     PAGE_SIZE = 5
     
-    comments = get_list_or_404(Comment.objects.filter(article=article).filter(parent_comment=None))
+    comments = Comment.objects.filter(article=article).filter(parent_comment=None)
 
     paginator = Paginator(comments, PAGE_SIZE)
     try:

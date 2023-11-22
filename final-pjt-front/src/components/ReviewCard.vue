@@ -1,5 +1,14 @@
 <template>
-<div class="mb-6 p-4 bg-white shadow rounded">
+<div class="mb-6 p-4 bg-white shadow rounded relative">
+  <div v-if="store.userInfo?.id === review.user?.id" class="absolute top-16 right-4 cursor-pointer">
+        <i @click="isDropdownOpen = !isDropdownOpen" class="fas fa-ellipsis-v"></i>
+        <ReviewDropdown
+          v-if="isDropdownOpen"
+          @close-dropdown="isDropdownOpen = false"
+          :review="review"
+        />
+  </div>
+
   <div class="flex justify-between items-center mb-2">
     <div class="flex items-center">
       <img v-if="review.user?.profile.profile_img"
@@ -14,7 +23,11 @@
     </div>
     <p class="text-sm text-gray-500">{{ formatDate(review.created_at) }}</p>
   </div>
-  <StarRating v-model="review.rating" :disableClick="true" :starSize="16" class="mb-2"/>
+  <StarRating v-model="review.rating" :disableClick="true"
+          :starSize="16" 
+          :starColor="'#4263EB'"
+          :numberOfStars="5"
+          class="mb-2"/>
   <p class="text-sm font-light">{{ review.content }}</p>
   <!-- <button v-if="review.content.length > 120" class="text-gray-500 text-right">더보기</button> -->
   <div class="flex justify-end mt-2">
@@ -22,16 +35,18 @@
       <i :class="{'fas fa-heart': isLike, 'far fa-heart': !isLike}"></i>
       좋아요 {{ likeCnt }}
     </button>
-    
+
   </div>
 </div>
 </template>
 
 <script setup>
-import StarRating from './StarRating.vue'
+import StarRating from '@/components/StarRating.vue'
 import { watch, ref } from 'vue'
 import { useUserStore } from '@/stores/user'
 import axios from 'axios'
+import ReviewDropdown from '@/components/ReviewDropdown.vue'
+
 
 const props = defineProps({
   review : {
@@ -41,6 +56,7 @@ const props = defineProps({
 const store = useUserStore()
 const likeCnt = ref(props.review?.liked_by.length)
 const isLike = ref(props.review?.liked_by.includes(store.userInfo.id))
+const isDropdownOpen = ref(false)
 
 watch(
   () => props.review,
