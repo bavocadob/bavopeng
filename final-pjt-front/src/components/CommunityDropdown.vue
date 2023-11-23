@@ -19,7 +19,13 @@ const router = useRouter();
 const articleId = ref(route.params.articleId);
 
 const editArticle = (article) => {
-  // router.push({ name: 'CommunityEdit', params: { article } });
+  // router.push({ name: 'CommunityEdit', params: { article } })
+  router.push({
+    name : 'articleEdit',
+    params : {
+      articleId : articleId.value
+    }
+  })
 };
 
 const deleteArticle = function() {

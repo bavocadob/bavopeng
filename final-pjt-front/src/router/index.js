@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ArticleCreateView from '@/views/ArticleCreateView.vue'
+import ArticleEditView from '@/views/ArticleEditView.vue'
 import ArticleDetailView from '@/views/ArticleDetailView.vue'
 import MovieDetailView from '@/views/MovieDetailView.vue'
 import MainView from '@/views/MainView.vue'
@@ -38,6 +39,11 @@ const router = createRouter({
       path: '/article/create',
       name: 'articleCreate',
       component: ArticleCreateView
+    },
+    {
+      path: '/community/:articleId/edit',
+      name: 'articleEdit',
+      component: ArticleEditView
     },
     {
       path: '/movie/:movieId',
