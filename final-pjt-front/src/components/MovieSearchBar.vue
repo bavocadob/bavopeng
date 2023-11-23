@@ -5,13 +5,13 @@
       <input 
         v-model="searchTerm" 
         @input="searchMovie"
-        @blur="active=false"
+        @blur="deactive"
         @focus="active=true"
         placeholder="Search" 
         class="w-full py-1 px-2 outline-none"
       >
     </div>
-    <div class="absolute w-full mt-1 bg-white shadow" v-if="active">
+    <div class="absolute w-full mt-1 bg-white shadow overflow-y-auto max-h-60" v-if="active">
       <a 
         class="p-2 block hover:bg-gray-200 cursor-pointer text-sm"
         v-for="movie in searchResults"
@@ -51,7 +51,11 @@ const searchMovie = debounce(function(event) {
   }
 }, 300)
 
-
+const deactive = function() {
+  setTimeout(() => {
+    active.value = false
+  }, 200)
+}
 
 
 </script>

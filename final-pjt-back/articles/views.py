@@ -72,7 +72,7 @@ def article_detail(request, article_pk):
     article = get_object_or_404(Article.objects.select_related('user', 'ref_movie'), pk=article_pk)
 
     if request.method == 'GET':
-        serializer = ArticleSerializer(article)
+        serializer = ArticleSerializer(article, context={'request': request})
         return Response(serializer.data)
     
     elif request.user.is_authenticated and request.user == article.user:

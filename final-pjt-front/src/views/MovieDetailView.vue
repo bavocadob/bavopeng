@@ -59,16 +59,25 @@
                   </div>
                 </div>
                 <div class="flex justify-between space-x-4">
-                  <button class="flex flex-col items-center justify-center py-2 px-6 rounded-md cursor-pointer">
-                    <i class="fas fa-thumbs-up text-3xl text-gray-500 transform transition-transform duration-200 hover:scale-125 hover:text-gray-600"></i>
+                  <button 
+                    class="flex flex-col items-center justify-center py-2 px-6 rounded-md cursor-pointer"
+                    @click="likeMovie"
+                  >
+                    <i :class="`fas fa-thumbs-up text-3xl transform transition-transform duration-200 hover:scale-125 ${isLike ? 'text-indigo-900 hover:text-indigo-900' : 'text-gray-500 hover:text-gray-600'}`"></i>
                     <span class="text-xs mt-1">좋아요</span>
                   </button>
-                  <button class="flex flex-col items-center justify-center py-2 px-6 rounded-md cursor-pointer">
-                    <i class="fas fa-thumbs-down text-3xl text-gray-500 transform transition-transform duration-200 hover:scale-125 hover:text-gray-600"></i>
+                  <button 
+                    class="flex flex-col items-center justify-center py-2 px-6 rounded-md cursor-pointer"
+                    @click="dislikeMovie"
+                  >
+                    <i :class="`fas fa-thumbs-down text-3xl transform transition-transform duration-200 hover:scale-125 ${isDislike ? 'text-indigo-900 hover:text-indigo-900' : 'text-gray-500 hover:text-gray-600'}`"></i>
                     <span class="text-xs mt-1">싫어요</span>
                   </button>
-                  <button class="flex flex-col items-center justify-center py-2 px-6 rounded-md cursor-pointer">
-                    <i class="fas fa-heart text-3xl text-gray-500 transform transition-transform duration-200 hover:scale-125 hover:text-gray-600"></i>
+                  <button
+                    class="flex flex-col items-center justify-center py-2 px-6 rounded-md cursor-pointer"
+                    @click="wishMovie"
+                    >
+                    <i :class="`fas fa-heart text-3xl transform transition-transform duration-200 hover:scale-125 ${isWish ? 'text-indigo-900 hover:text-indigo-900' : 'text-gray-500 hover:text-gray-600'}`"></i>
                     <span class="text-xs mt-1">보고싶어요</span>
                   </button>
                 </div>
@@ -102,7 +111,7 @@
           </div>
 
         </div>
-        <div class="p-8 bg-gray-200 shadow-sm rounded-lg">
+        <div class="p-8 mb-8 bg-gray-200 shadow-sm rounded-lg">
           <h1 class="text-xl font-bold mb-4">리뷰</h1>
           <MovieDetailMyReview
             :review="myReview"
@@ -120,6 +129,12 @@
             <i class="fas fa-arrow-right"></i>
           </router-link>
         </div>
+        <div class="p-8 bg-gray-200 shadow-sm rounded-lg">
+          <h1 class="text-xl font-bold mb-4">커뮤니티 글</h1>
+          <MovieArticleList 
+            :articles="movie.article_set"
+          />
+        </div>
       </div>
     </div>
   </section>
@@ -131,11 +146,12 @@ import ActorSwiper from '@/components/ActorSwiper.vue'
 import MovieDetailReview from '@/components/MovieDetailReview.vue'
 import MovieDetailMyReview from '@/components/MovieDetailMyReview.vue'
 import MovieReviewModal from '@/components/MovieReviewModal.vue'
+import MovieArticleList from '@/components/MovieArticleList.vue'
 
 
 import axios from 'axios'
 import { useRoute } from 'vue-router'
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, watchEffect } from 'vue'
 import { useUserStore } from '@/stores/user'
 
 const route = useRoute()
@@ -146,9 +162,21 @@ const isModalOpen = ref(false)
 const movie = ref({})
 const reviews =ref([])
 
+const isLike = ref(false)
+const isDislike = ref(false)
+const isWish = ref(false)
+
+const likeCnt = ref(0)
+const dislikeCnt = ref(0) 
 
 onMounted(() => {
   updateMovieData()
+})
+
+watchEffect(() => {
+  isLike.value = movie.value.is_like
+  isDislike.value = movie.value.is_dislike
+  isWish.value = movie.value.is_wish
 })
 
 
@@ -159,12 +187,71 @@ const myReview = computed(() => {
 const updateMovieData = function() {
   axios({
     method : 'GET',
-    url : `http://127.0.0.1:8000/api/v1/movie/${movieId}/`
+    url : `${store.API_URL}/api/v1/movie/${movieId}/`,
+    headers : {
+      Authorization : `token ${store.token}`
+    }
   })
   .then((res) => {
     movie.value = res.data
   })
   .catch((err) => console.log(err))
+}
+
+
+const likeMovie = function() {
+  axios({
+    method : 'POST',
+    url : `${store.API_URL}/api/v1/movie/${movieId}/like/`,
+    headers : {
+      Authorization : `token ${store.token}`
+    }
+  })
+  .then((res) => {
+    isLike.value = res.data.is_like
+    isDislike.value = res.data.is_dislike
+    likeCnt.value = res.data.like_cnt
+    dislikeCnt.value = res.data.dislike_cnt
+  })
+  .catch((err) => {
+    console.log(err)
+  })
+}
+
+
+const dislikeMovie = function() {
+  axios({
+    method : 'POST',
+    url : `${store.API_URL}/api/v1/movie/${movieId}/dislike/`,
+    headers : {
+      Authorization : `token ${store.token}`
+    }
+  })
+  .then((res) => {
+    isLike.value = res.data.is_like
+    isDislike.value = res.data.is_dislike
+    likeCnt.value = res.data.like_cnt
+    dislikeCnt.value = res.data.dislike_cnt
+  })
+  .catch((err) => {
+    console.log(err)
+  })
+}
+
+const wishMovie = function() {
+  axios({
+    method : 'POST',
+    url : `${store.API_URL}/api/v1/movie/${movieId}/wish/`,
+    headers : {
+      Authorization : `token ${store.token}`
+    }
+  })
+  .then((res) => {
+    isWish.value = res.data.is_wish
+  })
+  .catch((err) => {
+    console.log(err)
+  })
 }
 
 
