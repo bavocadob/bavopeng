@@ -1,11 +1,11 @@
 <template>
     <div class="mx-auto">
       <h1 class="text-4xl font-semibold text-white">프로필</h1>
-      <div class="my-8 p-8 h-full bg-gray-200 grid grid-cols-3 gap-4 rounded-lg">
-        <div class="my-14 bg-white shadow-md col-span-2">
+      <div class="my-8 p-8 h-full bg-gray-200 grid grid-cols-12 gap-4 rounded-lg">
+        <div class="my-14 bg-white shadow-md col-span-8" :class="{'col-start-3':!reviewsExists}">
           <UserProfile :profileInfo="profileInfo" />
         </div>
-        <div class="my-14 px-2 bg-white shadow-md flex flex-col justify-center">
+        <div v-if="reviewsExists" class="my-14 px-2 bg-white shadow-md col-span-4 flex flex-col justify-center">
           <div class="flex">
             <span class="my-4 mx-2 font-semibold">최근 리뷰</span>
             <!-- <img src="@/assets/images/chevron-right.svg" alt="화살표"> -->
@@ -17,28 +17,38 @@
         </div>
       </div>
       <div class="my-14 h-full bg-gray-200 flex flex-col items-center rounded-lg">
-        <div class="my-8">
-          <h2 class="text-2xl my-4">좋아하는 영화</h2>
-          <div class="bg-blue-950 rounded-lg">
-            <div class="w-[1100px] my-18 bg-black bg-opacity-50 p-8 rounded-lg shadow-md">
+        <div class="my-8 w-[1100px] ">
+          <h2 class="text-2xl my-4 text-center font-semibold">좋아하는 영화</h2>
+          <div v-if="likedMovieExists" class="bg-blue-950 rounded-lg">
+            <div class="my-18 bg-black bg-opacity-50 p-8 rounded-lg shadow-md">
               <MovieSwiper :movies="likeMovies" />
             </div>
           </div>
+          <div v-else class="flex flex-col items-center justify-center h-64">
+            <p class="mb-4 text-sm text-gray-500">아직 좋아요한 영화가 없어요.</p>
+            <p class="mb-4 text-sm text-gray-500">작품에 대한 감상을 기록해보세요!</p>
+            <button @click="goMain" class="px-4 py-2 bg-blue-900 font-medium text-white rounded">영화 찾아보기</button>
+          </div>
         </div>
         <div class="mb-12">
-          <h2 class="text-2xl m-4">보고싶은 영화</h2>
-          <div class="bg-blue-950 rounded-lg">
+          <h2 class="text-2xl m-4 text-center font-semibold">보고싶은 영화</h2>
+          <div v-if="wishedMovieExists" class="bg-blue-950 rounded-lg">
             <div class="w-[1100px] my-18 bg-black bg-opacity-50 p-8 rounded-lg shadow-md">
               <MovieSwiper :movies="wishMovies" />
             </div>
           </div>
+          <div v-else class="flex flex-col items-center justify-center h-64">
+            <p class="mb-4 text-sm text-gray-500">아직 보고싶은 영화를 기록하지 않으셨어요.</p>
+            <p class="mb-4 text-sm text-gray-500">작품에 대한 감상을 기록해보세요!</p>
+            <button @click="goMain" class="px-4 py-2 bg-blue-900 font-medium text-white rounded">영화 찾아보기</button>
+        </div>
         </div>
       </div>
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '../stores/user'
 import UserProfile from '@/components/UserProfile.vue'
@@ -55,6 +65,19 @@ const profileInfo = ref({})
 const likeMovies = ref([])
 const wishMovies = ref([])
 const reviews = ref([])
+
+const reviewsExists = computed(() => {
+  return reviews.value.length > 0 ? true : false
+})
+
+const likedMovieExists = computed(() => {
+    return likeMovies.value.length > 0 ? true : false
+  })
+
+const wishedMovieExists = computed(() => {
+    return wishMovies.value.length > 0 ? true : false
+  })
+  
 
 axios({
   method: 'get',
@@ -82,10 +105,15 @@ axios({
     console.log(err)
   })
 
-  const goMovie = function (movieId) {
-    router.push({name:'movieDetail', params:{movieId}})
-  }
-  
+const goMovie = function (movieId) {
+  router.push({name:'movieDetail', params:{movieId}})
+}
+
+const goMain = function () {
+  router.push({name: 'main'})
+}
+
+
 </script>
 
 <style scoped>

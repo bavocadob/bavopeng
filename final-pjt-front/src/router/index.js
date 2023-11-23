@@ -68,6 +68,11 @@ const router = createRouter({
       name: 'profileModify',
       component: ProfileView
     },
+    {
+      path: '/prefer',
+      name: 'prefer',
+      component: UserView
+    },
   ]
 })
 

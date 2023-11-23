@@ -9,7 +9,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from .serializers import GenreSerializer, MovieSerializer, ReviewSerializer, MovieListSerializer
+from .serializers import GenreSerializer, MovieSerializer, ReviewSerializer, MovieListSerializer, MovieSimpleSerializer
 from .models import Genre, Movie, Actor, Director, Review, WatchProvider, NowShowing, Upcoming
 
 
@@ -227,4 +227,13 @@ def movie_upcoming(request):
     movies = [ns.movie for ns in upcoming if ns.movie.poster_path]
     serializer = MovieListSerializer(movies, many=True)
 
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def movie_simple(request):
+    # print(request.query_params.getlist('movie_list[]'))
+    movie_list = request.query_params.getlist('id[]')
+    movies = Movie.objects.filter(id__in=movie_list)
+    serializer = MovieSimpleSerializer(movies, many=True)
     return Response(serializer.data)

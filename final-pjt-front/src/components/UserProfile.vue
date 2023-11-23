@@ -25,7 +25,7 @@
           /> 
         </div>
         <div class="basis-7/12 mt-6 flex flex-col justify-between">
-          <div class="flex max-md:flex-col items-start">
+          <div class="flex max-xl:flex-col items-start">
             <div class="basis-3/4">
               <h2 v-if="route.name === 'profile'" class="text-4xl font-bold">{{ nickname }}</h2>
               <div v-else>
@@ -52,10 +52,15 @@
               </div>
             </div>
           </div>
-          <div>
+          <!-- 사용자가 좋아요한 영화가 많은 장르 -->
+          <div v-if="(store.userInfo.username === route.params.username) && !genreExists">
+            <!-- 선호 영화 선택 페이지로 -->
+            <p @click="goSelectMovie" class="my-4 p-2 inline-block rounded-md bg-blue-200 shadow-md hover:cursor-pointer">좋아하는 영화를 찾아보세요!</p>
+          </div>
+          <div v-else>
             <span 
               v-for="genre in profileInfo.genresLike"
-              class="me-4 p-2 rounded-md bg-blue-200 font-semibold shadow-md"
+              class="my-4 me-4 p-2 rounded-md bg-blue-200 font-semibold shadow-md"
             >{{ genre[0] }}</span>
           </div>
           <div class="text-xl flex gap-4">
@@ -96,7 +101,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
+import { useRoute, useRouter, onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
 import { useUserStore } from '../stores/user'
 import axios from 'axios'
 
@@ -130,7 +135,11 @@ watch(() => props.profileInfo, (newProfile) => {
 })
 
 watch(introduce, (newValue) => {
-  introduceLength.value = newValue.length
+  introduceLength.value = newValue?.length
+})
+
+const genreExists = computed(() => {
+  return props.profileInfo.genresLike?.length > 0 ? true : false
 })
 
 // 프로필 사진 프리뷰
@@ -233,7 +242,7 @@ const follow = function () {
     }
   })
     .then((res) => {
-      console.log(res)
+      // console.log(res)
       if (props.profileInfo.followers.includes(store.userInfo.id)) {
         props.profileInfo.followers.pop(store.userInfo.id)
         followersCnt.value -= 1
@@ -246,6 +255,7 @@ const follow = function () {
       console.log(err)
     })
 }
+
 </script>
 
 <style scoped>

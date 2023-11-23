@@ -96,3 +96,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only_fields = ('movie', 'user', 'liked_by',)
 
 
+class MovieSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Movie
+        fields = ('id', 'title', 'poster_path',)

@@ -20,20 +20,21 @@
           </div>
         </div>
         <div class="w-[540px] h-12 me-12 justify-end items-center gap-4 inline-flex">
-            <MovieSearchBar />
+          <MovieSearchBar />
+          <div v-if="store.isLogin" @click="profielDropdown=!profielDropdown" class="relative">
+            <div>
+              <img v-if="profileImg" class="w-10 h-10 rounded-full bg-slate-50" :src="profileUrl" />
+              <img v-else class="w-10 h-10 rounded-full bg-slate-50" src="./assets/images/anonymous_square.png" />
+              
+            </div>
+            <div v-show="profielDropdown" class="absolute right-0 top-14">
+              <UserProfileDropdown />
+            </div>
+          </div>
+          <div v-else class="text-white flex gap-3">
             <RouterLink :to="{ name: 'signin' }">로그인</RouterLink>
             <RouterLink :to="{ name: 'signup' }">회원가입</RouterLink>
-            <div v-if="store.isLogin" @click="profielDropdown=!profielDropdown" class="relative">
-              <div>
-                <img v-if="profileImg" class="w-10 h-10 rounded-full bg-slate-50" :src="profileUrl" />
-                <img v-else class="w-10 h-10 rounded-full bg-slate-50" src="./assets/images/anonymous_square.png" />
-                
-              </div>
-              <div v-show="profielDropdown" class="absolute right-0 top-14">
-                <UserProfileDropdown />
-              </div>
-            </div>
-            
+          </div>
         </div>
       </nav>
       <div class="min-h-screen relative">
@@ -69,7 +70,7 @@ const goMain = function () {
 }
 
 const fullScreen = computed(() => {
-  const checkRoutes = ['signin', 'signup']
+  const checkRoutes = ['signin', 'signup', 'prefer']
   return checkRoutes.includes(route.name)
 })
 
