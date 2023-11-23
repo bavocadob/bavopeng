@@ -13,13 +13,13 @@
         :movie="movie"
         :key="movie.id"
         class="rounded-md"
-        :class="{'outline outline-4  outline-offset-4 outline-indigo-500':movie.is_like}"
+        :class="{'outline outline-4  outline-offset-4 outline-indigo-400':movie.is_like}"
       />
     </div>
     <div
       @click="goMain"
       class="my-12 px-4 py-2 text-xl font-semibold text-white fixed top-0 right-8 rounded-md bg-gray-400 cursor-default"
-      :class="{'hover:cusor-pointer bg-indigo-500 hover:bg-indigo-800': likeCount > 4}"
+      :class="{'hover:cursor-pointer bg-indigo-500 hover:bg-indigo-800': likeCount > 4}"
     >내 취향의 영화 보러가기
     </div>
   </div>
