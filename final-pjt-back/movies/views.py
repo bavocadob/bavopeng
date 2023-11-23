@@ -1,3 +1,6 @@
+import random
+import requests
+
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import get_object_or_404
 from django.conf import settings
@@ -10,7 +13,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from .serializers import GenreSerializer, MovieSerializer, ReviewSerializer, MovieListSerializer, MovieSimpleSerializer
+from .serializers import GenreSerializer, MovieSerializer, ReviewSerializer, MovieListSerializer, MovieSimpleSerializer, MovieRecommendSerializer
 from .models import Genre, Movie, Actor, Director, Review, WatchProvider, NowShowing, Upcoming
 
 
@@ -199,23 +202,115 @@ def movie_review_like(request, review_pk):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def recommend_by_movies(request):
-    # user = request.user
-    # reviews = user.review_set.filter(rating__gte=7)
-    # recommend = { 'movie_list' : [] }
-
-    # RECOMMEND_URL = 'https://api.themoviedb.org/3/movie/520951/recommendations?language=ko-KR&page=1'
-    # for review in reviews:
-    #     params = {
-            
-    #     }
-         
-    #     movie_id = review.movie_id
-    #     recommend['movie_list'].append(movie_id)
-
-    # result = { 'results' : recommend }
-    # return Response(result)
-    pass
+    user = request.user
+    liked_movies = user.liked_movies.all()
     
+    params = {
+            'api_key': API_KEY,
+            'language': 'ko-KR',
+            'page' : 1
+        }
+    
+    while liked_movies:
+        movie = random.choice(liked_movies)
+        liked_movies = liked_movies.exclude(id=movie.id)  # 이미 선택한 영화는 제외
+
+        # 추천 영화 데이터를 받아옴
+        RECOMMEND_URL = f'https://api.themoviedb.org/3/movie/{movie.id}/recommendations'
+        response = requests.get(RECOMMEND_URL, params=params).json()
+
+        recommended_movies = response.get('results', [])
+        while recommended_movies:
+            recommended_movie_data = random.choice(recommended_movies)
+            recommended_movies.remove(recommended_movie_data) 
+            recommended_movie_id = recommended_movie_data['id']
+            try:
+                recommended_movie = Movie.objects.get(id=recommended_movie_id)
+                serializer = MovieRecommendSerializer(recommended_movie)
+                movie_serializer = MovieRecommendSerializer(movie)
+                data = {
+                    'recommend' : serializer.data,
+                    'target' : movie_serializer.data,
+                }
+                return Response(data)
+            except Movie.DoesNotExist:
+                continue
+
+    return Response({"error": "No recommended movie found"}, status=404)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def recommend_by_wish(request):
+    user = request.user
+    wished_movies = user.wished_movies.all()
+    
+    params = {
+            'api_key': API_KEY,
+            'language': 'ko-KR',
+            'page' : 1
+        }
+    
+    while wished_movies:
+        movie = random.choice(wished_movies)
+        wished_movies = wished_movies.exclude(id=movie.id)  # 이미 선택한 영화는 제외
+
+        # 추천 영화 데이터를 받아옴
+        RECOMMEND_URL = f'https://api.themoviedb.org/3/movie/{movie.id}/recommendations'
+        response = requests.get(RECOMMEND_URL, params=params).json()
+
+        recommended_movies = response.get('results', [])
+        while recommended_movies:
+            recommended_movie_data = random.choice(recommended_movies)
+            recommended_movies.remove(recommended_movie_data) 
+            recommended_movie_id = recommended_movie_data['id']
+            try:
+                recommended_movie = Movie.objects.get(id=recommended_movie_id)
+                serializer = MovieRecommendSerializer(recommended_movie)
+                movie_serializer = MovieRecommendSerializer(movie)
+                data = {
+                    'recommend' : serializer.data,
+                    'target' : movie_serializer.data,
+                }
+                return Response(data)
+            except Movie.DoesNotExist:
+                continue
+
+    return Response({"error": "No recommended movie found"}, status=404)
+
+
+    
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def recommend_by_genre(request):
+    genre_id = request.query_params.get('genre_id', None)
+    print(genre_id)
+
+    if genre_id is None:
+        return Response({"error": "genre_id parameter is required"}, status=400)
+    try:
+        genre = Genre.objects.get(id=genre_id)
+    except Genre.DoesNotExist:
+        return Response({"error": "Genre does not exist"}, status=404)
+
+    top_movies = Movie.objects.filter(genres=genre).order_by('-rating_cnt').order_by('-rating_avg')[:20]
+
+    if not top_movies:
+        return Response({"error": "No movie found for this genre"}, status=404)
+
+    recommended_movie = random.choice(top_movies)
+    serializer = MovieRecommendSerializer(recommended_movie)
+    data = {
+        'recommend' : serializer.data,
+        'genre_name' : genre.name,
+    }
+
+    return Response(data)
+
+
+
+
 
 @api_view(['GET'])
 @permission_classes([AllowAny])

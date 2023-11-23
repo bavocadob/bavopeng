@@ -89,6 +89,12 @@ class MovieSerializer(serializers.ModelSerializer):
         return False
 
 
+class MovieRecommendSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Movie
+        fields = ('id', 'title', 'overview', 'release_date', 'runtime' , 'poster_path', 'rating_avg', 'rating_cnt')
+
+
 class ReviewSerializer(serializers.ModelSerializer):
     user = UserProfileSerializer(read_only=True)
     
