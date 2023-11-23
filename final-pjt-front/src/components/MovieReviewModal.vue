@@ -68,7 +68,7 @@ import axios from 'axios'
 import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 
-const emit = defineEmits(['closeModal', 'updateComment'])
+const emit = defineEmits(['closeModal', 'updateReview'])
 const store = useUserStore()
 const router = useRouter()
 

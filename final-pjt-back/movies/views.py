@@ -1,6 +1,7 @@
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.db.models import Count
 
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
@@ -137,22 +138,27 @@ def movie_review_detail(request, review_pk):
 def movie_review_pages(request, movie_pk, page):
     PAGE_SIZE = 10
     movie = get_object_or_404(Movie, pk=movie_pk)
-    # 정렬 방식을 URL 쿼리 파라미터에서 가져옵니다.
-    # 기본값은 1입니다.
-    sort_by = int(request.GET.get('sort_by', 1))
+    
+    # sort_by에서 get한 값이 숫자가 아닌 경우 0을 반환합니다.
+    sort_by = request.GET.get('sort_by', 0)
+    try:
+        sort_by = int(sort_by)
+    except ValueError:
+        sort_by = 0
     
     # 정렬 방식에 따른 필드 이름을 매핑하는 딕셔너리를 생성합니다.
     sort_mapping = {
-        1: 'created_at',
-        2: '-created_at',
-        3: 'rating',
-        4: '-rating'
+        0: '-liked_by__count',  # 좋아요 순
+        1: '-created_at',  # 최근 작성 순
+        2: '-rating',  # 평점 높은 순
+        3: 'rating'  # 평점 낮은 순
     }
 
-    sort_field = sort_mapping.get(sort_by, 'created_at')
-    reviews = movie.review_set.all().order_by(sort_field)
+    sort_field = sort_mapping.get(sort_by, '-liked_by__count')
+    reviews = movie.review_set.annotate(liked_by__count=Count('liked_by')).order_by(sort_field)
 
     paginator = Paginator(reviews, PAGE_SIZE)
+
     try:
         reviews = paginator.page(page)
     except PageNotAnInteger:

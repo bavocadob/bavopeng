@@ -1,51 +1,78 @@
 <template>
   <div>
     <div class="pb-8">
-      <table v-if="articles.length > 0">
-        <thead class="bg-gray-200">
-          <tr>
-            <th class="py-2 px-4" style="width: 4rem">번호</th>
-            <th class="py-2 px-4">제목</th>
-            <th class="py-2 px-4" style="width: 10rem">글쓴이</th>
-            <th class="py-2 px-4" style="width: 6rem">작성일</th>
-            <th class="py-2 px-4" style="width: 4rem">추천</th>
-          </tr>
-        </thead>
-        <tbody v-for="article in articles" :key="article.id" class="bg-white">
-          <tr>
-            <td class="py-2 px-4">{{ article.id }}</td>
-            <router-link
-              :to="{
-                name: 'articleDetail',
-                params: {
-                  articleId: article.id,
-                },
-              }"
-            >
-              <td class="py-2 px-4 hover:text-blue-500">
-                {{ article.title }}                
-                <span v-if="article.comment_cnt" class="text-red-500">[{{ article.comment_cnt }}]</span>
-                <i v-if="article.has_image" class="fas fa-image text-green-700"></i>
-              </td>
-            </router-link>
-            <td class="py-2 px-4">
-              <!-- todo: 라우터 링크 -> 프로필 -->
-                {{
-                  article.user.profile.nickname
-                }}
-              <!-- 라우터 링크 -> 프로필  -->
-            </td>
-            <td class="py-2 px-4">{{ formatDate(article.created_at) }}</td>
-            <td class="py-2 px-4">{{ article.liked_cnt }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div v-if="articles.length > 0">
+        <!-- 화면이 작을 때 보여질 레이아웃 -->
+        <div 
+          v-for="article in articles" 
+          :key="'mobile-' + article.id" 
+          class="md:hidden bg-white p-4 mb-2 rounded hover:bg-blue-100 transition-colors duration-200"
+        >
+          <router-link
+            :to="{
+              name: 'articleDetail',
+              params: {
+                articleId: article.id,
+              },
+            }"
+            class="text-lg hover:text-blue-500"
+          >
+            {{ article.title }}
+            <span v-if="article.comment_cnt" class="text-red-500">[{{ article.comment_cnt }}]</span>
+            <i v-if="article.has_image" class="fas fa-image text-green-700"></i>
+          </router-link>
+          <div class="flex justify-between text-gray-500 text-xs mt-2">
+            <div>{{ article.user.profile.nickname }}</div>
+            <div>{{ formatDate(article.created_at) }}</div>
+          </div>
+        </div>
+
+        <!-- 화면이 클 때 보여질 레이아웃 -->
+        <table v-if="articles.length > 0" class="hidden md:table">
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="py-2 px-4" style="width: 4rem">번호</th>
+              <th class="py-2 px-4">제목</th>
+              <th class="py-2 px-4" style="width: 10rem">글쓴이</th>
+              <th class="py-2 px-4" style="width: 6rem">작성일</th>
+              <th class="py-2 px-4" style="width: 4rem">추천</th>
+            </tr>
+          </thead>
+          <tbody v-for="article in articles" :key="'desktop-' + article.id" class="bg-white">
+            <tr>
+              <td class="py-2 px-4">{{ article.id }}</td>
+              <router-link
+                :to="{
+                  name: 'articleDetail',
+                  params: {
+                    articleId: article.id,
+                  },
+                }"
+              >
+                <td class="py-2 px-4 hover:text-blue-500">
+                  {{ article.title }}
+                  <span v-if="article.comment_cnt" class="text-red-500">[{{ article.comment_cnt }}]</span>
+                  <i v-if="article.has_image" class="fas fa-image text-green-700"></i>
+                </td>
+              </router-link>
+              <td class="py-2 px-4">{{ article.user.profile.nickname }}</td>
+              <td class="py-2 px-4">{{ formatDate(article.created_at) }}</td>
+              <td class="py-2 px-4">{{ article.liked_cnt }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div class="flex flex-col items-center justify-center bg-gray-100 py-60 px-4 rounded" v-else>
         <i class="fas fa-exclamation-circle text-3xl mb-4"></i>
         <p class="text-lg text-gray-500">아직 작성된 게시글이 없습니다.</p>
       </div>
     </div>
 
+
+
+
+    
+    
     <div class="text-zinc-300">
       <Paging 
         :pageData="pageData"
