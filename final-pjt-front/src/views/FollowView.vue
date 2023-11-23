@@ -1,8 +1,8 @@
 <template>
   <div class="text-center text-white text-4xl font-semibold my-8">
     <h1
-      class="my-8"
-    >Who's {{ route.name }} ?</h1>
+      class="my-8 cursor-pointer"
+    >{{ route.name }} list</h1>
     <div class="w-1/2 h-[640px] text-slate-900 overflow-y-auto mx-auto hover:cursor-pointer">
       <UserFollowProfile
       v-for="user in followList"
@@ -42,6 +42,7 @@ axios({
 const goProfile = function (username) {
   router.push({name: 'profile', params: {username}})
 }
+
 </script>
 
 <style scoped>

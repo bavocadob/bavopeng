@@ -8,7 +8,7 @@
           :review="review"
         />
   </div>
-
+  <!-- 여기 수정 필요할지도.. -->
   <div class="flex justify-between items-center mb-2">
     <div class="flex items-center">
       <img v-if="review.user?.profile.profile_img"

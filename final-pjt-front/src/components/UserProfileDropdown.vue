@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="w-48 h-full bg-white border rounded-lg shadow-lg text-xl 
+    class="w-28 h-full bg-white border rounded-lg shadow-lg text-lg 
       outline outline-1 outline-slate-400 outline-offset-1"
   >
     <a class="hover:bg-slate-200 p-4 block" :href="`http://localhost:5173/profile/${store.userInfo.username}`">

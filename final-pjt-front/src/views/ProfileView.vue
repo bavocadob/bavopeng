@@ -1,11 +1,11 @@
 <template>
     <div class="mx-auto">
       <h1 class="text-4xl font-semibold text-white">프로필</h1>
-      <div class="my-8 p-8 h-full bg-gray-200 grid grid-cols-12 gap-4 rounded-lg">
-        <div class="my-14 bg-white shadow-md col-span-8">
+      <div class="my-8 p-8 h-full bg-gray-200 grid grid-cols-12 gap-2 rounded-lg">
+        <div class="my-14 max-lg:my-4 bg-white shadow-md col-span-8 max-lg:col-span-12">
           <UserProfile :profileInfo="profileInfo" />
         </div>
-        <div class="my-14 px-2 bg-white shadow-md col-span-4 flex flex-col justify-center">
+        <div class="my-14 max-lg:my-4 px-2 bg-white shadow-md col-span-4 flex flex-col justify-center max-lg:col-span-12">
           <span class="my-4 mx-2 font-semibold">최근 리뷰</span>
           <div class="p-2">
             <div v-if="reviewsExists"  class="scroll-container h-[360px] snap-x">
@@ -14,14 +14,14 @@
                 class="border snap-center"
               />
             </div>
-            <div class="h-[360px]">
+            <div v-else class="h-[360px]">
               <p class="mt-20 text-center text-sm text-gray-500">아직 작성한 리뷰가 없어요.</p>
             </div>
           </div>
         </div>
       </div>
       <div class="my-14 pt-4 h-full bg-gray-200 flex flex-col items-center rounded-lg">
-        <div class="my-8 w-[1100px] border-b border-gray-400 pb-6 px-4">
+        <div class="my-8 w-full border-b border-gray-400 pb-6 px-6">
           <h2 class="text-2xl my-4 text-center font-semibold">좋아하는 영화</h2>
           <div v-if="likedMovieExists" class="bg-blue-950 rounded-lg">
             <div class="my-18 bg-black bg-opacity-50 p-8 rounded-lg shadow-md">
@@ -34,7 +34,7 @@
             <button @click="goMain" class="px-4 py-2 bg-blue-900 font-medium text-white rounded">영화 찾아보기</button>
           </div>
         </div>
-        <div class="mb-8 w-[1100px] p-4">
+        <div class="mb-8 w-full px-6">
           <h2 class="text-2xl my-4 text-center font-semibold">보고싶은 영화</h2>
           <div v-if="wishedMovieExists" class="bg-blue-950 rounded-lg">
             <div class="my-18 bg-black bg-opacity-50 p-8 rounded-lg shadow-md">

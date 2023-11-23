@@ -25,7 +25,7 @@
       
       <div v-if="searchedMovies.length > 0" class="absolute top-full w-full bg-white border border-gray-200 rounded-lg mt-1 z-10 overflow-y-auto max-h-48">
         <div 
-          class="p-1.5 text-sm"
+          class="p-1.5 text-sm cursor-pointer"
           v-for="(movie, index) in searchedMovies"
           :key="index"
           @click="selectMovie(movie)"
