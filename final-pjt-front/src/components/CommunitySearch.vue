@@ -14,7 +14,7 @@
     />
     <input @keyup.enter="search" type="text" v-model="query" class="ml-1 p-2 text-sm rounded-lg bg-gray-200 text-gray-700 border border-gray-300" />
     
-    <div @click="search" class="ml-1 p-2 text-sm rounded-lg bg-red-500 text-white border border-red-500 hover:bg-red-600 cursor-pointer">검색</div>
+    <div @click="search" class="ml-1 p-2 text-sm rounded-lg bg-blue-900 text-white w-12 text-center hover:bg-blue-1000 cursor-pointer">검색</div>
   </div>
 </template>
 
@@ -52,6 +52,11 @@ const search = function() {
   .multiselect__single {
     font-size: 0.8rem;
   }
+
+
+  .multiselect__single--highlight {
+  background: #BFDBFF !important;
+}
 </style>
 <style scoped>
 

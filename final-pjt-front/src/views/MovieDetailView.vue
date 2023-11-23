@@ -4,6 +4,7 @@
       <div class="w-3/5 mr-8">
         <div class="mb-8 bg-gray-200 shadow-sm rounded-lg">
           <div
+            v-if="movie.backdrop_path"
             class="w-full h-80 bg-cover bg-center opacity-50 overflow-hidden rounded-t-lg"
             :style="{
 'background-image': 'url(' + 'https://image.tmdb.org/t/p/original/' + movie.backdrop_path + ')',
@@ -12,6 +13,7 @@
 
           <div class="flex p-6">
             <img
+              v-if="movie.poster_path"
               class="border-gray-200 w-48 z-10"
               :src="`https://image.tmdb.org/t/p/original${movie.poster_path}`"
             />
@@ -111,6 +113,15 @@
           </div>
 
         </div>
+
+        <div class="p-8 mb-8 bg-gray-200 shadow-sm rounded-lg">
+          <h1 class="text-xl font-bold mb-4">무비스코어</h1>
+          <MovieScore
+            :likeCnt="likeCnt"
+            :dislikeCnt="dislikeCnt"
+          />
+        </div>
+
         <div class="p-8 mb-8 bg-gray-200 shadow-sm rounded-lg">
           <h1 class="text-xl font-bold mb-4">리뷰</h1>
           <MovieDetailMyReview
@@ -123,9 +134,12 @@
             @close-modal="isModalOpen=false"
             @update-review="updateMovieData"
           />
-          <MovieDetailReview :reviews="movie.review_set?.slice(0, 3)" />
-          <router-link v-if="movie.review_set?.length > 3" :to="{ name: 'reviewList', params: { movieId: movie.id }}">
-            리뷰 {{ movie.review_set?.length }}개 모두 보기 
+          <MovieDetailReview 
+            :reviews="reviews.slice(0, 3)"
+            @sortReview="sortReview"
+            />
+          <router-link v-if="reviewCnt > 3" :to="{ name: 'reviewList', params: { movieId: movie.id }}">
+            리뷰 {{ reviewCnt }}개 모두 보기
             <i class="fas fa-arrow-right"></i>
           </router-link>
         </div>
@@ -147,6 +161,7 @@ import MovieDetailReview from '@/components/MovieDetailReview.vue'
 import MovieDetailMyReview from '@/components/MovieDetailMyReview.vue'
 import MovieReviewModal from '@/components/MovieReviewModal.vue'
 import MovieArticleList from '@/components/MovieArticleList.vue'
+import MovieScore from '@/components/MovieScore.vue'
 
 
 import axios from 'axios'
@@ -160,7 +175,10 @@ const movieId = route.params.movieId
 
 const isModalOpen = ref(false)
 const movie = ref({})
-const reviews =ref([])
+
+const sortOption = ref(0)
+const reviews = ref([])
+const reviewCnt = ref(0)
 
 const isLike = ref(false)
 const isDislike = ref(false)
@@ -168,6 +186,12 @@ const isWish = ref(false)
 
 const likeCnt = ref(0)
 const dislikeCnt = ref(0) 
+
+const pageData = ref({
+  maxPage : 1 ,
+  currentPage : 1,
+  pageInterval : 10,
+})
 
 onMounted(() => {
   updateMovieData()
@@ -184,18 +208,51 @@ const myReview = computed(() => {
   return movie.value.review_set?.find(review => review.user.id === store.userInfo.id);
 })
 
-const updateMovieData = function() {
+
+const getReivews = function() {
   axios({
     method : 'GET',
-    url : `${store.API_URL}/api/v1/movie/${movieId}/`,
-    headers : {
-      Authorization : `token ${store.token}`
+    url : `${store.API_URL}/api/v1/movie/${movieId}/reviews/${pageData.value.currentPage}/`,
+    params : {
+      sort_by : sortOption.value
     }
   })
   .then((res) => {
+    reviewCnt.value = res.data.count
+    reviews.value = res.data.results
+    pageData.value.maxPage = res.data.num_pages
+    pageData.value.currentPage = res.data.current_page
+  })
+  .catch((err) => console.log(err)) 
+}
+
+
+const sortReview = function(option) {
+  sortOption.value = option
+  pageData.value.currentPage = 1
+  getReivews()
+}
+
+
+const updateMovieData = function() {
+  const headers = {};
+  if (store.token) {
+    headers.Authorization = `token ${store.token}`;
+  }
+
+  axios({
+    method : 'GET',
+    url : `${store.API_URL}/api/v1/movie/${movieId}/`,
+    headers : headers
+  })
+  .then((res) => {
     movie.value = res.data
+    likeCnt.value = res.data.like_cnt
+    dislikeCnt.value = res.data.dislike_cnt
   })
   .catch((err) => console.log(err))
+
+  getReivews()
 }
 
 

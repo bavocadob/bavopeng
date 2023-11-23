@@ -2,7 +2,15 @@
 <div class="flex justify-center">
   <div class="w-3/5 mr-8">
     <div class="p-8 bg-gray-200 shadow-sm rounded-lg">
-      <MovieDetailReview :reviews="reviews" />
+      <MovieDetailReview
+        :reviews="reviews"
+        @sortReview="sortReview"
+      />
+
+      <Paging 
+        :pageData="pageData"
+        @change-page="changePage"
+      />
     </div>
   </div>
 </div>
@@ -13,33 +21,55 @@ import axios from 'axios'
 import { useRoute } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import MovieDetailReview from '@/components/MovieDetailReview.vue'
+import Paging from '@/components/Paging.vue'
+import { useUserStore } from '@/stores/user'
 
-
+const store = useUserStore()
 const route = useRoute()
 const movieId = route.params.movieId
 const reviews = ref([])
+const sortOption = ref(0)
 
 const pageData = ref({
-  maxPage : 1 ,
+  maxPage : 1,
   currentPage : 1,
   pageInterval : 10,
 })
 
 
 onMounted(() => {
+  getReivews()
+})
+
+const getReivews = function() {
   axios({
     method : 'GET',
-    url : `http://127.0.0.1:8000/api/v1/movie/${movieId}/reviews/${pageData.value.currentPage}/`,
+    url : `${store.API_URL}/api/v1/movie/${movieId}/reviews/${pageData.value.currentPage}/`,
+    params : {
+      sort_by : sortOption.value
+    }
   })
   .then((res) => {
-    console.log(res)
     reviews.value = res.data.results
     pageData.value.maxPage = res.data.num_pages
-    pageData.value.currentPage = res.data.currentPage
-
+    pageData.value.currentPage = res.data.current_page
   })
-  .catch((err) => console.log(err))
-})
+  .catch((err) => console.log(err)) 
+}
+
+
+const sortReview = function(option) {
+  sortOption.value = option
+  pageData.value.currentPage = 1
+  getReivews()
+}
+
+
+const changePage = function(page) {
+  pageData.value.currentPage = page
+  getReivews()
+}
+
 
 
 </script>

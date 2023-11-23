@@ -54,6 +54,8 @@ class MovieSerializer(serializers.ModelSerializer):
     is_like = serializers.SerializerMethodField()
     is_dislike = serializers.SerializerMethodField()
     is_wish = serializers.SerializerMethodField()
+    like_cnt = serializers.IntegerField(source='liked_by.count', read_only=True)
+    dislike_cnt = serializers.IntegerField(source='disliked_by.count', read_only=True)
 
     actors = ActorSerializer(many=True, read_only=True)
     genres = GenreSerializer(many=True, read_only=True)
@@ -65,7 +67,7 @@ class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
         fields = ('id', 'title', 'original_title', 'certification', 'overview','release_date','runtime' , 'genres', 'backdrop_path', 'poster_path',
-                  'actors', 'directors', 'trailer', 'rating_avg', 'rating_cnt', 'review_set', 'article_set' ,'is_like', 'is_dislike', 'is_wish')
+                  'actors', 'directors', 'trailer', 'rating_avg', 'rating_cnt', 'review_set', 'article_set' ,'is_like', 'is_dislike', 'is_wish', 'like_cnt', 'dislike_cnt')
 
 
     def get_is_like(self, obj):

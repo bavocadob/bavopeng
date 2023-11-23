@@ -61,7 +61,6 @@ const isDropdownOpen = ref(false)
 watch(
   () => props.review,
   (newReview) => {
-    console.log(review)
     likeCnt.value = newReview.liked_by.length;
     isLike.value = newReview.liked_by.includes(store.userInfo.id);
   }

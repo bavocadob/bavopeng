@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watchEffect } from 'vue'
+import { ref, computed, watchEffect, onMounted } from 'vue'
 
 const props = defineProps({
   pageData: Object,
@@ -43,7 +43,6 @@ const props = defineProps({
   }
 })
 const emit = defineEmits(["changePage"])
-
 
 const currentPage = ref(props.pageData.currentPage)
 const maxPage = ref(props.pageData.maxPage)

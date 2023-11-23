@@ -145,12 +145,14 @@ const isDropdownOpen = ref(false)
 
 
 onMounted(() => {
+  const headers = {};
+  if (store.token) {
+    headers.Authorization = `token ${store.token}`;
+  }
   axios({
     method : 'GET',
     url : `${store.API_URL}/api/v1/article/${route.params.articleId}`,
-    headers : {
-      Authorization : `token ${store.token}`
-    },
+    headers : headers
   })
   .then((res) => {
     article.value = res.data
