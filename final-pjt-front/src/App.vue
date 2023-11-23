@@ -18,14 +18,22 @@
             Wishlist
             <!-- <RouterLink>Wishlist</RouterLink> -->
           </div>
-          <button @click="logout">로그아웃</button>
         </div>
         <div class="w-[540px] h-12 me-12 justify-end items-center gap-4 inline-flex">
             <MovieSearchBar />
             <RouterLink :to="{ name: 'signin' }">로그인</RouterLink>
             <RouterLink :to="{ name: 'signup' }">회원가입</RouterLink>
-            <img class="w-[50px] h-[50px] left-[1150px] top-0 rounded-full" src="https://via.placeholder.com/50x50" />
-            <RouterLink :to="{name: 'profile', params: {username: 'test01'}}">프로필</RouterLink>
+            <div v-if="store.isLogin" @click="profielDropdown=!profielDropdown" class="relative">
+              <div>
+                <img v-if="profileImg" class="w-10 h-10 rounded-full bg-slate-50" :src="profileUrl" />
+                <img v-else class="w-10 h-10 rounded-full bg-slate-50" src="./assets/images/anonymous_square.png" />
+                
+              </div>
+              <div v-show="profielDropdown" class="absolute right-0 top-14">
+                <UserProfileDropdown />
+              </div>
+            </div>
+            
         </div>
       </nav>
       <div class="min-h-screen relative">
@@ -42,6 +50,7 @@
 
 
 <script setup>
+import UserProfileDropdown from '@/components/UserProfileDropdown.vue'
 import { ref, watch, computed } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import { useUserStore } from './stores/user'
@@ -52,17 +61,21 @@ const route = useRoute()
 const router = useRouter()
 const store = useUserStore()
 
+const profielDropdown = ref(false)
+const profileUrl = ref(null)
+
 const goMain = function () {
   router.push({ name: 'main' })
-}
-
-const logout = function () {
-  store.logout()
 }
 
 const fullScreen = computed(() => {
   const checkRoutes = ['signin', 'signup']
   return checkRoutes.includes(route.name)
+})
+
+const profileImg = computed(() => {
+  profileUrl.value = store.API_URL + store.userInfo.profile.profile_img
+  return store.userInfo.profile.profile_img ? true : false
 })
 
 </script>

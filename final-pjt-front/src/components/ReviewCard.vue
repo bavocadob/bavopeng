@@ -12,7 +12,7 @@
   <div class="flex justify-between items-center mb-2">
     <div class="flex items-center">
       <img v-if="review.user?.profile.profile_img"
-        :src="review.user?.profile.profile_img"
+        :src="'http://127.0.0.1:8000'+review.user?.profile.profile_img"
         class="w-8 h-8 rounded-full mr-4"
       />
       <img v-else
