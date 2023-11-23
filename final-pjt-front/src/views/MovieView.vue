@@ -1,5 +1,6 @@
 <template>
 <!-- <h1>영화 목록</h1> -->
+<RecommendMovie />
 <div class="bg-slate-700 m-3 p-4 text-white rounded-lg">
   <p>현재 상영중인 영화</p>
   <MovieSwiper :movies="nowShowing" />
@@ -11,6 +12,7 @@
 </template>
 
 <script setup>
+import RecommendMovie from '@/components/RecommendMovie.vue'
 import MovieSwiper from '@/components/MovieSwiper.vue'
 import axios from 'axios'
 import { ref, onMounted } from 'vue'
