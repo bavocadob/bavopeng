@@ -95,6 +95,7 @@ export const useUserStore = defineStore('user', () => {
         console.log(res)
         token.value = null
         userInfo.value = {}
+        router.replace({name: 'main'})
       })
       .catch((err) => {
         console.log(err)

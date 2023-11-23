@@ -1,6 +1,6 @@
 <template>
-    <div class="bg-white flex flex-col p-4">
-      <div class="basis-4/5 flex">
+    <div class="bg-white h-full flex flex-col justify-between p-4">
+      <div class="flex basis-1/2">
         <div class="basis-4/12 m-4 flex flex-col justify-center items-center gap-4">
           <div v-if="profileUrl" class="w-32 h-32 border rounded-full bg-slate-50">
             <img 
@@ -25,8 +25,8 @@
           /> 
         </div>
         <div class="basis-7/12 mt-6 flex flex-col justify-between">
-          <div class="flex max-xl:flex-col items-start">
-            <div class="basis-3/4">
+          <div class="flex justify-between items-start">
+            <div class="">
               <h2 v-if="route.name === 'profile'" class="text-4xl font-bold">{{ nickname }}</h2>
               <div v-else>
                 <input v-model="nickname" @input="ExistsNickname"
@@ -36,11 +36,11 @@
                 <p>{{ checkNicknameMessage }}</p>
               </div>
             </div>
-            <div class="basis-1/4">
+            <div class="">
               <button @click="follow"
                 v-if="store.userInfo.username !== route.params.username"
                 class="bg-slate-200 text-sm px-2 py-1.5 rounded-md"
-              >&nbsp&nbsp팔로우&nbsp&nbsp</button>
+              >&nbsp&nbsp{{ followBtn }}&nbsp&nbsp</button>
               <div v-else>
                 <button 
                   v-if="route.name === 'profile'" @click="goModify"
@@ -53,29 +53,31 @@
             </div>
           </div>
           <!-- 사용자가 좋아요한 영화가 많은 장르 -->
-          <div v-if="(store.userInfo.username === route.params.username) && !genreExists">
-            <!-- 선호 영화 선택 페이지로 -->
-            <p @click="goSelectMovie" class="my-4 p-2 inline-block italic underline hover:cursor-pointer">여기서 좋아하는 영화를 찾아보세요!</p>
+          <div v-show="route.name === 'profile'">
+            <div v-if="(store.userInfo.username === route.params.username) && !genreExists">
+              <!-- 선호 영화 선택 페이지로 -->
+              <p @click="goSelectMovie" class="my-4 p-2 inline-block italic underline hover:cursor-pointer">여기서 좋아하는 영화를 찾아보세요!</p>
+            </div>
+            <div v-else>
+              <span 
+                v-for="genre in profileInfo.genresLike"
+                class="my-4 me-4 p-2 rounded-md bg-blue-200 font-semibold shadow-md"
+              >{{ genre[0] }}</span>
+            </div>
           </div>
-          <div v-else>
-            <span 
-              v-for="genre in profileInfo.genresLike"
-              class="my-4 me-4 p-2 rounded-md bg-blue-200 font-semibold shadow-md"
-            >{{ genre[0] }}</span>
-          </div>
-          <div class="text-xl flex gap-4">
-            <p @click="followerList" class="shadow-md py-1 px-1.5 rounded-md hover:cursor-pointer">
+          <div v-show="route.name === 'profile'" class="text-xl flex gap-4">
+            <p @click="followerList" class="border py-1 px-1.5 rounded-md hover:cursor-pointer">
               팔로워&nbsp
               <span class="">{{ followersCnt }}</span>
             </p>
-            <p @click="followingList" class="shadow-md py-1 px-1.5 rounded-md hover:cursor-pointer">
+            <p @click="followingList" class="border py-1 px-1.5 rounded-md hover:cursor-pointer">
               팔로우&nbsp
               <span class="">{{ followingsCnt }}</span>
             </p>
           </div>
         </div>
       </div>
-      <div class="basis-1/2 m-2">
+      <div class="m-2 basis-1/2">
         <div class="flex justify-between">
           <p class="text-lg">About Me</p>
           <div v-if="route.name === 'profileModify'" class="mt-auto">
@@ -84,7 +86,7 @@
           </div>
         </div>
         <div v-if="route.name === 'profile'" class="p-4 border shadow-sm ">
-          <p>{{ introduce }}</p>
+          <p class="break-words">{{ introduce }}</p>
           <p v-if="!introduce" class="text-gray-400">
             아직 소개가 없습니다.
           </p>
@@ -101,7 +103,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { useRoute, useRouter, onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
+import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router'
 import { useUserStore } from '../stores/user'
 import axios from 'axios'
 
@@ -114,17 +116,18 @@ const props = defineProps({
 
 const username = route.params.username
 const nickname = ref(props.profileInfo.nickname)
-const profileUrl = ref(store.API_URL+props.profileInfo.profile_img)
+const profileUrl = ref(props.profileInfo.profile_img)
 const introduce = ref(props.profileInfo.introduce)
 const followingsCnt = ref(props.profileInfo.followingsCnt)
 const followersCnt = ref(props.profileInfo.followersCnt)
 const checkNicknameMessage = ref('')
 const isValidNickname = ref(true)
 const introduceLength = ref(introduce.value?.length)
+const isFollowing = ref(props.profileInfo.isFollowing)
 
 watch(() => props.profileInfo, (newProfile) => {
   if (newProfile.profile_img !== null) {
-    profileUrl.value = store.API_URL+newProfile.profile_img
+    profileUrl.value = newProfile.profile_img
   } else {
     profileUrl.value = null
   }
@@ -132,15 +135,22 @@ watch(() => props.profileInfo, (newProfile) => {
   introduce.value = newProfile.introduce
   followingsCnt.value = newProfile.followingsCnt
   followersCnt.value = newProfile.followersCnt
+  isFollowing.value = newProfile.isFollowing
 })
 
 watch(introduce, (newValue) => {
   introduceLength.value = newValue?.length
 })
 
+const followBtn = computed(() => {
+  return isFollowing.value ? '언팔로우' : '팔로우'
+})
+
 const genreExists = computed(() => {
   return props.profileInfo.genresLike?.length > 0 ? true : false
 })
+
+
 
 // 프로필 사진 프리뷰
 const previewImg = ref(profileUrl)
@@ -223,7 +233,7 @@ const goSelectMovie = function () {
 }
 
 onBeforeRouteLeave((to, from) =>  {
-  console.log(from)
+  // console.log(from)
   if (from.name === 'profileModify') {
     const answer = window.confirm('저장하시겠습니까?')
     if (answer === false) {
@@ -237,7 +247,6 @@ onBeforeRouteLeave((to, from) =>  {
 
 // 팔로우 & 언팔로우
 const follow = function () {
-  console.log(props.profileInfo.followers)
   axios({
     method: 'post',
     url: `${store.API_URL}/api/v1/following/${props.profileInfo.id}/`,
@@ -247,17 +256,24 @@ const follow = function () {
   })
     .then((res) => {
       // console.log(res)
-      if (props.profileInfo.followers.includes(store.userInfo.id)) {
-        props.profileInfo.followers.pop(store.userInfo.id)
-        followersCnt.value -= 1
-      } else {
-        props.profileInfo.followers.push(store.userInfo.id)
+      isFollowing.value = !isFollowing.value
+      if (isFollowing.value) {
         followersCnt.value += 1
+      } else {
+        followersCnt.value -= 1
       }
     })
     .catch((err) => {
       console.log(err)
     })
+}
+
+const followerList = function () {
+  router.push({name: 'follower', params: {id: props.profileInfo.id}})
+}
+
+const followingList = function () {
+  router.push({name: 'following', params: {id: props.profileInfo.id}})
 }
 
 </script>

@@ -56,7 +56,7 @@ import { ref, watch, computed } from 'vue'
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import { useUserStore } from './stores/user'
 import MovieSearchBar from '@/components/MovieSearchBar.vue'
-import test from './views/test.vue'
+// import test from './views/test.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -76,7 +76,7 @@ const fullScreen = computed(() => {
 
 const profileImg = computed(() => {
   profileUrl.value = store.API_URL + store.userInfo.profile?.profile_img
-  return store.userInfo.profile.profile_img ? true : false
+  return store.userInfo.profile?.profile_img ? true : false
 })
 
 </script>

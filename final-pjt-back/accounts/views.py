@@ -13,17 +13,17 @@ User = get_user_model()
 
 # 프로필 조회, 수정
 @api_view(['GET', 'PUT'])
-def profile(reqeust, username):
+def profile(request, username):
     user = get_object_or_404(User.objects.select_related('profile').prefetch_related('liked_movies', 'disliked_movies', 'wished_movies', 'liked_articles', 'disliked_articles'), username=username)
     profile = user.profile
 
-    if reqeust.method == 'GET':
-        serializer = ProfileSerializer(profile)
+    if request.method == 'GET':
+        serializer = ProfileSerializer(profile, context={'request': request})
         return Response(serializer.data)
     
-    elif reqeust.method == 'PUT':
-        if reqeust.user.is_authenticated and reqeust.user.profile == profile:
-            serializer = ProfileFormSerializer(profile, data=reqeust.data, partial=True)
+    elif request.method == 'PUT':
+        if request.user.is_authenticated and request.user.profile == profile:
+            serializer = ProfileFormSerializer(profile, data=request.data, partial=True)
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(serializer.data)
@@ -40,7 +40,7 @@ def following(request, user_pk):
 
     if request.method == 'GET':
         following_list = target_user.followings.all()
-        serializer = UserFollowSerializer(following_list, many=True)
+        serializer = UserFollowSerializer(following_list, context={'request': request}, many=True)
         return Response(serializer.data)
 
     elif request.user.is_authenticated and request_user != target_user:
@@ -61,7 +61,7 @@ def following(request, user_pk):
 def follower(request, user_pk):
     target_user = get_object_or_404(User, pk=user_pk)
     follower_list = target_user.followers.all()
-    serializer = UserFollowSerializer(follower_list, many=True)
+    serializer = UserFollowSerializer(follower_list, context={'request': request}, many=True)
     return Response(serializer.data)
 
 

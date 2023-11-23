@@ -77,7 +77,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
     #         model = Comment
     #         fields = ('id', 'content', 'created_at', 'liked_cnt')
 
-
+    is_following = serializers.SerializerMethodField()
     followings_cnt = serializers.IntegerField(source='followings.count', read_only=True)
     followers_cnt = serializers.IntegerField(source='followers.count', read_only=True)
     liked_movies = MovieSerializer(many=True, read_only=True)
@@ -90,7 +90,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'followings_cnt', 'followers_cnt', 'followers',
+        fields = ('id', 'followings_cnt', 'followers_cnt', 'followers', 'is_following',
                   'liked_movies', 'wished_movies', 'review_set', 'genres_like')
 
     def get_genres_like(self, obj):
@@ -100,6 +100,12 @@ class UserDetailSerializer(serializers.ModelSerializer):
         top_genres = genre_counter.most_common(3)
         return top_genres
 
+    # 요청하는 유저가 타겟유저를 팔로하고 있는지 확인 (타겟유저의 팔로워 목록 확인)
+    def get_is_following(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated:
+            return obj.followers.filter(id=user.id).exists()
+        return False
 
 # 프로필 조회
 class ProfileSerializer(serializers.ModelSerializer):

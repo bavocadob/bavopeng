@@ -8,6 +8,7 @@ import MovieView from '@/views/MovieView.vue'
 import CommunityView from '@/views/CommunityView.vue'
 import MovieReviewListView from '@/views/MovieReviewListView.vue'
 import ProfileView from '@/views/ProfileView.vue'
+import FollowView from '@/views/FollowView.vue'
 
 
 const router = createRouter({
@@ -72,6 +73,16 @@ const router = createRouter({
       path: '/prefer',
       name: 'prefer',
       component: UserView
+    },
+    {
+      path: '/follow/:id',
+      name: 'following',
+      component: FollowView
+    },
+    {
+      path: '/follow/:id',
+      name: 'follower',
+      component: FollowView
     },
   ]
 })
