@@ -9,7 +9,7 @@
       </div>
   
       <div>
-        <button @click="createArticle" class="bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded">
+        <button @click="createArticle" class="bg-blue-900 text-white font-medium py-2 px-4 rounded shadow-lg border border-blue-800 transition-colors duration-200">
           글쓰기
         </button>
       </div>
@@ -28,7 +28,6 @@ const store = useUserStore()
 const router = useRouter()
 
 const createArticle = function() {
-  console.log(router)
   if (store.token) {
     router.push({
       name : 'articleCreate'

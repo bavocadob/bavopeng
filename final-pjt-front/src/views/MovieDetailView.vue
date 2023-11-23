@@ -26,15 +26,15 @@
                   <p class="text-sm text-gray-500 mb-4">{{ movie.original_title }}</p>
                 </div>
               </div>
-
-              <div class="flex items-center mb-20">
-                <div class="mr-4">
+              <div class="flex items-center mb-4">
+                <div class="mr-1">
                   <p>{{ movie.release_date }}</p>
                 </div>
                 <div class="separator mx-4"></div>
-                <p class="text-lg mr-4">{{ movie.runtime }} 분</p>
-                <div class="separator mx-4"></div>
-                <div class="flex items-center">
+                <p class="text-base">{{ movie.runtime }} 분</p>
+                
+              </div>
+              <div class="flex items-center mb-5">
                   <span
                     class="mr-2 bg-gray-300 py-1 px-2 rounded-full text-sm font-semibold"
                     v-for="genre in movie.genres"
@@ -43,26 +43,43 @@
                     {{ genre.name }}
                   </span>
                 </div>
-              </div>
-
               <div class="flex flex-col justify-between">
                 <div class="flex justify-between mb-4">
                   <div class="flex items-center">
-                    <StarRatingVue v-model="movie.rating_avg" :disableClick="true" :starSize="34" />
+                    <StarRatingVue 
+                      v-model="movie.rating_avg"
+                      :disableClick="true"
+                      :starSize="34"
+                      :starColor="'#4263EB'"
+                      :numberOfStars="5"
+                      />
                     <p class="text-lg font-bold ml-1">
                       {{ Math.round(movie.rating_avg * 10) / 10 }}
                     </p>
                   </div>
                 </div>
-                <div class="flex justify-between">
-                  <div class="flex items-center">
-                    <button class="font-semibold border bg-yellow-500 border-yellow-500 text-gray-900 py-2 px-6 rounded-md cursor-pointer hover:bg-yellow-600 mr-2">
-                      <i class="fas fa-thumbs-up"></i> 좋아요
-                    </button>
-                    <button class="font-semibold border bg-yellow-500 border-yellow-500 text-gray-900 py-2 px-6 rounded-md cursor-pointer hover:bg-yellow-600">
-                      <i class="fas fa-thumbs-down"></i> 싫어요
-                    </button>
-                  </div>
+                <div class="flex justify-between space-x-4">
+                  <button 
+                    class="flex flex-col items-center justify-center py-2 px-6 rounded-md cursor-pointer"
+                    @click="likeMovie"
+                  >
+                    <i :class="`fas fa-thumbs-up text-3xl transform transition-transform duration-200 hover:scale-125 ${isLike ? 'text-indigo-900 hover:text-indigo-900' : 'text-gray-500 hover:text-gray-600'}`"></i>
+                    <span class="text-xs mt-1">좋아요</span>
+                  </button>
+                  <button 
+                    class="flex flex-col items-center justify-center py-2 px-6 rounded-md cursor-pointer"
+                    @click="dislikeMovie"
+                  >
+                    <i :class="`fas fa-thumbs-down text-3xl transform transition-transform duration-200 hover:scale-125 ${isDislike ? 'text-indigo-900 hover:text-indigo-900' : 'text-gray-500 hover:text-gray-600'}`"></i>
+                    <span class="text-xs mt-1">싫어요</span>
+                  </button>
+                  <button
+                    class="flex flex-col items-center justify-center py-2 px-6 rounded-md cursor-pointer"
+                    @click="wishMovie"
+                    >
+                    <i :class="`fas fa-heart text-3xl transform transition-transform duration-200 hover:scale-125 ${isWish ? 'text-indigo-900 hover:text-indigo-900' : 'text-gray-500 hover:text-gray-600'}`"></i>
+                    <span class="text-xs mt-1">보고싶어요</span>
+                  </button>
                 </div>
               </div>
 
@@ -94,14 +111,29 @@
           </div>
 
         </div>
-        <div class="p-8 bg-gray-200 shadow-sm rounded-lg">
+        <div class="p-8 mb-8 bg-gray-200 shadow-sm rounded-lg">
           <h1 class="text-xl font-bold mb-4">리뷰</h1>
-          <MovieDetailMyReview :review="myReview"/>
+          <MovieDetailMyReview
+            :review="myReview"
+            @open-modal="isModalOpen=true"
+          />
+          
+          <MovieReviewModal
+            v-if="isModalOpen" :movie="movie"
+            @close-modal="isModalOpen=false"
+            @update-review="updateMovieData"
+          />
           <MovieDetailReview :reviews="movie.review_set?.slice(0, 3)" />
           <router-link v-if="movie.review_set?.length > 3" :to="{ name: 'reviewList', params: { movieId: movie.id }}">
             리뷰 {{ movie.review_set?.length }}개 모두 보기 
             <i class="fas fa-arrow-right"></i>
           </router-link>
+        </div>
+        <div class="p-8 bg-gray-200 shadow-sm rounded-lg">
+          <h1 class="text-xl font-bold mb-4">커뮤니티 글</h1>
+          <MovieArticleList 
+            :articles="movie.article_set"
+          />
         </div>
       </div>
     </div>
@@ -113,34 +145,114 @@ import StarRatingVue from '@/components/StarRating.vue'
 import ActorSwiper from '@/components/ActorSwiper.vue'
 import MovieDetailReview from '@/components/MovieDetailReview.vue'
 import MovieDetailMyReview from '@/components/MovieDetailMyReview.vue'
+import MovieReviewModal from '@/components/MovieReviewModal.vue'
+import MovieArticleList from '@/components/MovieArticleList.vue'
 
 
 import axios from 'axios'
 import { useRoute } from 'vue-router'
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, watchEffect } from 'vue'
 import { useUserStore } from '@/stores/user'
 
 const route = useRoute()
-const movieId = route.params.movieId
-const movie = ref({})
 const store = useUserStore()
+const movieId = route.params.movieId
+
+const isModalOpen = ref(false)
+const movie = ref({})
+const reviews =ref([])
+
+const isLike = ref(false)
+const isDislike = ref(false)
+const isWish = ref(false)
+
+const likeCnt = ref(0)
+const dislikeCnt = ref(0) 
 
 onMounted(() => {
+  updateMovieData()
+})
+
+watchEffect(() => {
+  isLike.value = movie.value.is_like
+  isDislike.value = movie.value.is_dislike
+  isWish.value = movie.value.is_wish
+})
+
+
+const myReview = computed(() => {
+  return movie.value.review_set?.find(review => review.user.id === store.userInfo.id);
+})
+
+const updateMovieData = function() {
   axios({
     method : 'GET',
-    url : `http://127.0.0.1:8000/api/v1/movie/${movieId}/`
+    url : `${store.API_URL}/api/v1/movie/${movieId}/`,
+    headers : {
+      Authorization : `token ${store.token}`
+    }
   })
   .then((res) => {
     movie.value = res.data
   })
   .catch((err) => console.log(err))
+}
 
-})
+
+const likeMovie = function() {
+  axios({
+    method : 'POST',
+    url : `${store.API_URL}/api/v1/movie/${movieId}/like/`,
+    headers : {
+      Authorization : `token ${store.token}`
+    }
+  })
+  .then((res) => {
+    isLike.value = res.data.is_like
+    isDislike.value = res.data.is_dislike
+    likeCnt.value = res.data.like_cnt
+    dislikeCnt.value = res.data.dislike_cnt
+  })
+  .catch((err) => {
+    console.log(err)
+  })
+}
 
 
-const myReview = computed(() => {
-  return movie.review_set?.find(review => review.user.id === store.userInfo.id);
-})
+const dislikeMovie = function() {
+  axios({
+    method : 'POST',
+    url : `${store.API_URL}/api/v1/movie/${movieId}/dislike/`,
+    headers : {
+      Authorization : `token ${store.token}`
+    }
+  })
+  .then((res) => {
+    isLike.value = res.data.is_like
+    isDislike.value = res.data.is_dislike
+    likeCnt.value = res.data.like_cnt
+    dislikeCnt.value = res.data.dislike_cnt
+  })
+  .catch((err) => {
+    console.log(err)
+  })
+}
+
+const wishMovie = function() {
+  axios({
+    method : 'POST',
+    url : `${store.API_URL}/api/v1/movie/${movieId}/wish/`,
+    headers : {
+      Authorization : `token ${store.token}`
+    }
+  })
+  .then((res) => {
+    isWish.value = res.data.is_wish
+  })
+  .catch((err) => {
+    console.log(err)
+  })
+}
 
 
 </script>

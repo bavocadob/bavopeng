@@ -72,7 +72,7 @@ def article_detail(request, article_pk):
     article = get_object_or_404(Article.objects.select_related('user', 'ref_movie'), pk=article_pk)
 
     if request.method == 'GET':
-        serializer = ArticleSerializer(article)
+        serializer = ArticleSerializer(article, context={'request': request})
         return Response(serializer.data)
     
     elif request.user.is_authenticated and request.user == article.user:
@@ -114,7 +114,7 @@ def comment_list(request, article_pk, page):
     article = get_object_or_404(Article, pk=article_pk)
     PAGE_SIZE = 5
     
-    comments = get_list_or_404(Comment.objects.filter(article=article).filter(parent_comment=None))
+    comments = Comment.objects.filter(article=article).filter(parent_comment=None)
 
     paginator = Paginator(comments, PAGE_SIZE)
     try:

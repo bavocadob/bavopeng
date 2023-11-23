@@ -8,6 +8,7 @@
     <img
       v-else
       src="@/assets/images/anonymous.png"
+      
     >
 
     <div>
