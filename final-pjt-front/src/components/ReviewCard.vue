@@ -10,17 +10,26 @@
   </div>
   <!-- 여기 수정 필요할지도.. -->
   <div class="flex justify-between items-center mb-2">
-    <div class="flex items-center">
-      <img v-if="review.user?.profile.profile_img"
-        :src="'http://127.0.0.1:8000'+review.user?.profile.profile_img"
-        class="w-8 h-8 rounded-full mr-4"
-      />
-      <img v-else
-        src="@/assets/images/anonymous_square.png"
-        class="w-8 h-8 rounded-full mr-4"
-      >
-      <p class="font-bold">{{ review.user.profile.nickname }}</p>
-    </div>
+    <router-link
+          :to="{
+            name: 'profile',
+            params: {
+              username: review.user?.username,
+            },
+          }"
+        >
+      <div class="flex items-center">
+        <img v-if="review.user?.profile.profile_img"
+          :src="'http://127.0.0.1:8000'+review.user?.profile.profile_img"
+          class="w-8 h-8 rounded-full mr-4"
+        />
+        <img v-else
+          src="@/assets/images/anonymous_square.png"
+          class="w-8 h-8 rounded-full mr-4"
+        >
+        <p class="font-bold">{{ review.user.profile.nickname }}</p>
+      </div>
+    </router-link>
     <p class="text-sm text-gray-500">{{ formatDate(review.created_at) }}</p>
   </div>
   <StarRating v-model="review.rating" :disableClick="true"

@@ -22,6 +22,15 @@
           <div class="border border-t-0 border-r-0 border-l-0 my-4"></div>
 
           <div class="flex justify-between items-center mb-6">
+              <router-link
+                v-if="article.user?.username"
+                :to="{
+                  name: 'profile',
+                  params: {
+                    username: article.user?.username,
+                  },
+                }"
+              >
             <div class="flex items-center">
               <img v-if="article.user?.profile.profile_img"
                 :src="article.user?.profile.profile_img"
@@ -36,6 +45,7 @@
                 <p class="text-sm text-gray-500">{{ formatDate(article.created_at) }}</p>
               </div>
             </div>
+            </router-link>
             <div class="flex">
               <div class="flex items-center mr-6">
                 <i class="fas fa-heart text-red-500 mr-2"></i>

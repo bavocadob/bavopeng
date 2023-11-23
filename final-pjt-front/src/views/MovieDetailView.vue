@@ -7,18 +7,18 @@
             v-if="movie.backdrop_path"
             class="w-full h-80 bg-cover bg-center opacity-50 overflow-hidden rounded-t-lg"
             :style="{
-'background-image': 'url(' + 'https://image.tmdb.org/t/p/original/' + movie.backdrop_path + ')',
+              'background-image': 'url(' + 'https://image.tmdb.org/t/p/original/' + movie.backdrop_path + ')',
             }"
           ></div>
 
-          <div class="flex p-6">
+          <div class="flex p-6 flex-wrap lg:flex-nowrap">
             <img
               v-if="movie.poster_path"
-              class="border-gray-200 w-48 z-10"
+              class="border-gray-200 w-full md:w-48 z-10 mb-8 md:mb-0 md:mr-8"
               :src="`https://image.tmdb.org/t/p/original${movie.poster_path}`"
             />
 
-            <div class="w-full ml-8">
+            <div class="w-full">
               <div class="flex justify-between">
                 <div>
                   <p class="text-2xl font-bold mb-1">
@@ -28,23 +28,25 @@
                   <p class="text-sm text-gray-500 mb-4">{{ movie.original_title }}</p>
                 </div>
               </div>
+              
               <div class="flex items-center mb-4">
                 <div class="mr-1">
                   <p>{{ movie.release_date }}</p>
                 </div>
                 <div class="separator mx-4"></div>
                 <p class="text-base">{{ movie.runtime }} 분</p>
-                
               </div>
+              
               <div class="flex items-center mb-5">
-                  <span
-                    class="mr-2 bg-gray-300 py-1 px-2 rounded-full text-sm font-semibold"
-                    v-for="genre in movie.genres"
-                    :key="genre.id"
-                  >
-                    {{ genre.name }}
-                  </span>
-                </div>
+                <span
+                  class="mr-2 bg-gray-300 py-1 px-2 rounded-full text-sm font-semibold"
+                  v-for="genre in movie.genres"
+                  :key="genre.id"
+                >
+                  {{ genre.name }}
+                </span>
+              </div>
+              
               <div class="flex flex-col justify-between">
                 <div class="flex justify-between mb-4">
                   <div class="flex items-center">
@@ -54,13 +56,14 @@
                       :starSize="34"
                       :starColor="'#4263EB'"
                       :numberOfStars="5"
-                      />
+                    />
                     <p class="text-lg font-bold ml-1">
                       {{ Math.round(movie.rating_avg * 10) / 10 }}
                     </p>
                   </div>
                 </div>
-                <div class="flex justify-between space-x-4">
+
+                <div class="flex flex-row md:flex-row justify-between space-y-4 md:space-y-0 md:space-x-4">
                   <button 
                     class="flex flex-col items-center justify-center py-2 px-6 rounded-md cursor-pointer"
                     @click="likeMovie"
@@ -68,6 +71,7 @@
                     <i :class="`fas fa-thumbs-up text-3xl transform transition-transform duration-200 hover:scale-125 ${isLike ? 'text-indigo-900 hover:text-indigo-900' : 'text-gray-500 hover:text-gray-600'}`"></i>
                     <span class="text-xs mt-1">좋아요</span>
                   </button>
+
                   <button 
                     class="flex flex-col items-center justify-center py-2 px-6 rounded-md cursor-pointer"
                     @click="dislikeMovie"
@@ -75,20 +79,22 @@
                     <i :class="`fas fa-thumbs-down text-3xl transform transition-transform duration-200 hover:scale-125 ${isDislike ? 'text-indigo-900 hover:text-indigo-900' : 'text-gray-500 hover:text-gray-600'}`"></i>
                     <span class="text-xs mt-1">싫어요</span>
                   </button>
+
                   <button
                     class="flex flex-col items-center justify-center py-2 px-6 rounded-md cursor-pointer"
                     @click="wishMovie"
-                    >
+                  >
                     <i :class="`fas fa-heart text-3xl transform transition-transform duration-200 hover:scale-125 ${isWish ? 'text-indigo-900 hover:text-indigo-900' : 'text-gray-500 hover:text-gray-600'}`"></i>
                     <span class="text-xs mt-1">보고싶어요</span>
                   </button>
                 </div>
               </div>
-
-
             </div>
           </div>
         </div>
+
+
+
         <div class="p-8 bg-gray-200 mb-8 shadow-sm rounded-lg">
           <div class="border-b border-gray-400 pb-8 mb-8">
             <h2 class="text-xl font-bold mb-4">줄거리</h2>

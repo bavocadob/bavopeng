@@ -4,7 +4,7 @@ import requests
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import get_object_or_404
 from django.conf import settings
-from django.db.models import Count
+from django.db.models import Count, Q
 
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
@@ -284,16 +284,14 @@ def recommend_by_wish(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def recommend_by_genre(request):
-    genre_id = request.query_params.get('genre_id', None)
-    print(genre_id)
+    user = request.user
+    liked_movies = user.liked_movies.all()
+    movie_genres = Movie.genres.through.objects.filter(movie__in=liked_movies)
 
-    if genre_id is None:
-        return Response({"error": "genre_id parameter is required"}, status=400)
-    try:
-        genre = Genre.objects.get(id=genre_id)
-    except Genre.DoesNotExist:
-        return Response({"error": "Genre does not exist"}, status=404)
+    # 장르별로 영화의 수를 세고, 가장 많은 영화를 가진 상위 3개의 장르를 선택합니다.
+    top_three_genres = movie_genres.values('genre__name', 'genre__id').annotate(movie_count=Count('movie')).order_by('-movie_count')[:3]
 
+    genre = Genre.objects.get(pk=random.choice(top_three_genres).get('genre__id'))
     top_movies = Movie.objects.filter(genres=genre).order_by('-rating_cnt').order_by('-rating_avg')[:20]
 
     if not top_movies:
@@ -303,9 +301,8 @@ def recommend_by_genre(request):
     serializer = MovieRecommendSerializer(recommended_movie)
     data = {
         'recommend' : serializer.data,
-        'genre_name' : genre.name,
+        'target' : genre.name,
     }
-
     return Response(data)
 
 
