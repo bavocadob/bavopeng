@@ -8,12 +8,15 @@
         <div v-if="reviewsExists" class="my-14 px-2 bg-white shadow-md col-span-4 flex flex-col justify-center">
           <div class="flex">
             <span class="my-4 mx-2 font-semibold">최근 리뷰</span>
-            <!-- <img src="@/assets/images/chevron-right.svg" alt="화살표"> -->
           </div>
-          <ReviewCard @click="goMovie(review.movie)"
-            v-for="review in reviews" :key="review.id" :review="review"
-            class="border"
-          />
+          <div class="p-2">
+            <div class="scroll-container h-[360px] snap-x">
+              <ReviewCard @click="goMovie(review.movie)"
+                v-for="review in reviews" :key="review.id" :review="review"
+                class="border snap-center"
+              />
+            </div>
+          </div>
         </div>
       </div>
       <div class="my-14 h-full bg-gray-200 flex flex-col items-center rounded-lg">
@@ -99,7 +102,7 @@ axios({
     }
     likeMovies.value = data.user.liked_movies
     wishMovies.value = data.user.wished_movies
-    reviews.value = data.user.review_set.sort((a, b) => b.id - a.id).slice(0, 2)
+    reviews.value = data.user.review_set.sort((a, b) => b.id - a.id)
   })
   .catch((err) => {
     console.log(err)
@@ -117,5 +120,26 @@ const goMain = function () {
 </script>
 
 <style scoped>
+.scroll-container {
+  overflow-y: scroll; /* 세로 스크롤 활성화 */
+  scrollbar-width: thin; /* 스크롤바 너비 */
+  scrollbar-color: #4F46E5 #E5E7EB; /* 스크롤바 색상 */
+}
+
+/* 스크롤바 트랙 스타일링 */
+.scroll-container::-webkit-scrollbar {
+  width: 6px; /* 스크롤바 너비 */
+}
+
+/* 스크롤바 색상 및 모양 */
+.scroll-container::-webkit-scrollbar-thumb {
+  background-color: #3f4ed8; /* 스크롤바 색상 */
+  border-radius: 3px; /* 스크롤바 모양 */
+}
+
+/* 스크롤바 트랙 배경색 */
+.scroll-container::-webkit-scrollbar-track {
+  background-color: #E5E7EB;
+}
 
 </style>

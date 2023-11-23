@@ -64,6 +64,7 @@ def movie_like(request, movie_pk):
             movie.liked_by.add(user)
         
         data = {
+            'movie_id': movie_pk,
             'is_like' : movie.liked_by.filter(pk=user.pk).exists(),
             'like_cnt' : movie.liked_by.count(),
             'is_dislike' : movie.disliked_by.filter(pk=user.pk).exists(),
@@ -235,5 +236,5 @@ def movie_simple(request):
     # print(request.query_params.getlist('movie_list[]'))
     movie_list = request.query_params.getlist('id[]')
     movies = Movie.objects.filter(id__in=movie_list)
-    serializer = MovieSimpleSerializer(movies, many=True)
+    serializer = MovieSimpleSerializer(movies, context={'request': request}, many=True)
     return Response(serializer.data)

@@ -36,7 +36,7 @@ export const useUserStore = defineStore('user', () => {
         getUserInfo(token)
       })
       .then(() => {
-        router.replace({name: 'main'})
+        router.replace({name: 'prefer'})
       })
       .catch((err) => {
         console.log(err)
