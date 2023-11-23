@@ -71,8 +71,11 @@ def exists_id(request):
     username = request.GET.get('username', '')
     if User.objects.all().filter(username=username).exists():
         return Response({'result':True})
-    else:
-        return Response({'result':False})
+    else:   # 유저네임과 중복인 닉네임이 존재하는지 추가 확인
+        if Profile.objects.all().filter(nickname=username).exists():
+            return Response({'result':True})
+        else:
+            return Response({'result':False})
     
 
 # 중복 닉네임 확인
