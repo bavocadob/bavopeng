@@ -75,7 +75,7 @@ const fullScreen = computed(() => {
 })
 
 const profileImg = computed(() => {
-  profileUrl.value = store.API_URL + store.userInfo.profile.profile_img
+  profileUrl.value = store.API_URL + store.userInfo.profile?.profile_img
   return store.userInfo.profile.profile_img ? true : false
 })
 

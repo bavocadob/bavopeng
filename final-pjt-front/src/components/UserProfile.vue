@@ -55,7 +55,7 @@
           <!-- 사용자가 좋아요한 영화가 많은 장르 -->
           <div v-if="(store.userInfo.username === route.params.username) && !genreExists">
             <!-- 선호 영화 선택 페이지로 -->
-            <p @click="goSelectMovie" class="my-4 p-2 inline-block rounded-md bg-blue-200 shadow-md hover:cursor-pointer">좋아하는 영화를 찾아보세요!</p>
+            <p @click="goSelectMovie" class="my-4 p-2 inline-block italic underline hover:cursor-pointer">여기서 좋아하는 영화를 찾아보세요!</p>
           </div>
           <div v-else>
             <span 
@@ -216,6 +216,10 @@ const goProfile = function () {
   if (isValidNickname.value) {
     router.push({name: 'profile', params: {username: username}})
   }
+}
+
+const goSelectMovie = function () {
+  router.push({name: 'prefer'})
 }
 
 onBeforeRouteLeave((to, from) =>  {

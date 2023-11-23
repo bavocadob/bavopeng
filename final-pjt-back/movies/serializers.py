@@ -97,6 +97,14 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class MovieSimpleSerializer(serializers.ModelSerializer):
+    is_like = serializers.SerializerMethodField()
+
     class Meta:
         model = Movie
-        fields = ('id', 'title', 'poster_path',)
+        fields = ('id', 'title', 'poster_path', 'is_like',)
+
+    def get_is_like(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated:
+            return obj.liked_by.filter(id=user.id).exists()
+        return False

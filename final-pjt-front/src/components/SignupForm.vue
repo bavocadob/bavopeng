@@ -1,66 +1,66 @@
 <template>
     <div>
-      <div class="w-[800px] h-[600px] bg-white rounded-lg flex justify-evenly">
-        <div class="w-80 flex flex-col justify-center items-center">
+      <div class="w-[800px] h-[600px] bg-white rounded-lg grid grid-rows-5 grid-flow-col gap-2">
+        <div class="w-80 row-span-5 flex flex-col justify-center items-center">
           <h1 class="text-4xl">Welcome!</h1>
           <img @click="goMain" src="@/assets/images/Logo.png" alt="logo" class="w-60 my-10 cursor-pointer">
         </div>
-        <div class="w-96 m-4 flex flex-col">
-          <div class="basis-1/4 text-4xl">
-            <p class="my-auto">
-              회원가입
+        <div class="w-96 m-4 row-span-4 flex flex-col">
+          <div class="basis-1/4 text-2xl">
+            <p class="">
+              
             </p>
           </div>
           <form @submit.prevent="signUp" class="basis-3/4">
-            <div class="flex flex-col">
-              <label for="username">아이디</label>
+            <div class="flex flex-col my-2">
+              <label for="username" class="font-semibold">아이디</label>
               <input
                 type="text" id="username" placeholder="ID" v-model="username"
                 class="h-6  md:h-12 2xl:h-12 px-4 py-2.5 my-2 bg-blue-50 border border-2 border-slate-300 
                       focus:outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-200 text-black 
                       rounded-lg text-gray-950 text-xs md:text-lg 2xl:text-xl font-normal leading-tight"
-                      :class="{'border-pink-500 text-pink-600 focus:border-pink-500 focus:ring-pink-500':!isValidUsername}"
+                      :class="{'border-pink-500 text-pink-600 focus:border-pink-500 focus:ring-pink-200':!isValidUsername}"
               >
-              <p>{{ checkIdMessage }}</p>
+              <p class="text-emerald-700" :class="{'text-pink-700':!isValidUsername}">{{ checkIdMessage }}</p>
             </div>
-            <div class="flex flex-col">
-              <label for="password1">비밀번호</label>
+            <div class="flex flex-col my-2">
+              <label for="password1" class="font-semibold">비밀번호</label>
               <input
                 type="password" id="password1" placeholder="PASSWORD" v-model="password1" 
                 class="h-8  md:h-12 2xl:h-12 px-4 py-2.5 my-2 bg-blue-50 border border-2 border-slate-300 
                       focus:outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-200 text-black
                       rounded-lg text-gray-950 text-xs md:text-lg 2xl:text-xl font-normal leading-tight"
-                      :class="{'border-pink-500 text-pink-600 focus:border-pink-500 focus:ring-pink-500':!isValidPassword1}"
+                      :class="{'border-pink-500 text-pink-600 focus:border-pink-500 focus:ring-pink-200':!isValidPassword1}"
               >
-              <p>{{ checkPwMessage1 }}</p>
+              <p class="text-emerald-700" :class="{'text-pink-700':!isValidPassword1}">{{ checkPwMessage1 }}</p>
             </div>
-            <div class="flex flex-col">
-              <label for="password2">비밀번호 확인</label>
+            <div class="flex flex-col my-2">
+              <label for="password2" class="font-semibold">비밀번호 확인</label>
               <input
                 type="password" id="password2" placeholder="PASSWORD" v-model="password2"
                 class="h-8  md:h-12 2xl:h-12 px-4 py-2.5 my-2 bg-blue-50 border border-2 border-slate-300 
                       focus:outline-none focus:border-blue-700 focus:ring-2 focus:ring-blue-200 text-black
                       disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none
                       rounded-lg text-gray-950 text-xs md:text-lg 2xl:text-xl font-normal leading-tight"
-                :class="{'border-pink-500 text-pink-600 focus:border-pink-500 focus:ring-pink-500':!isValidPassword2}"
+                :class="{'border-pink-500 text-pink-600 focus:border-pink-500 focus:ring-pink-200':!isValidPassword2}"
               >
-              <p>{{ checkPwMessage2 }}</p>
+              <p class="text-emerald-700" :class="{'text-pink-700':!isValidPassword2}">{{ checkPwMessage2 }}</p>
             </div>
             <button :disabled="!validate" :class="{'cursor-default': !validate}" 
               class="w-full h-8 lg:h-10 2xl:h-14 my-5 border border-2 border-blue-700 bg-blue-900 hover:bg-blue-700 rounded-lg cursor-pointer
               text-center text-white text-xs lg:text-lg 2xl:text-xl font-semibold leading-tight
               disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none"
             >
-              Sign Up
+              시작하기
             </button>
           </form>
-          <p>
-            아이디가 있으신가요? 
-            <span class=" mx-2 text-blue-900 font-bold">
-              <RouterLink :to="{name: 'signin'}">로그인</RouterLink>
-            </span>
-          </p>
         </div>
+        <p class="text-center">
+          아이디가 있으신가요? 
+          <span class=" mx-2 text-blue-900 font-bold">
+            <RouterLink :to="{name: 'signin'}">로그인</RouterLink>
+          </span>
+        </p>
       </div>
     </div>
 </template>
