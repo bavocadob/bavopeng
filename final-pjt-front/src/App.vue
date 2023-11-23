@@ -27,8 +27,6 @@
                       w-[340px] h-10 bg-slate-900 rounded-[100px] border border-2 border-blue-900"
               >
             </form>
-            <RouterLink :to="{ name: 'signin' }">로그인</RouterLink>
-            <RouterLink :to="{ name: 'signup' }">회원가입</RouterLink>
             <div v-if="store.isLogin" @click="profielDropdown=!profielDropdown" class="relative">
               <div>
                 <img v-if="profileImg" class="w-10 h-10 rounded-full bg-slate-50" :src="profileUrl" />
@@ -38,6 +36,10 @@
               <div v-show="profielDropdown" class="absolute right-0 top-14">
                 <UserProfileDropdown />
               </div>
+            </div>
+            <div v-else class="text-white flex gap-3">
+              <RouterLink :to="{ name: 'signin' }">로그인</RouterLink>
+              <RouterLink :to="{ name: 'signup' }">회원가입</RouterLink>
             </div>
             
         </div>
@@ -74,7 +76,7 @@ const goMain = function () {
 }
 
 const fullScreen = computed(() => {
-  const checkRoutes = ['signin', 'signup']
+  const checkRoutes = ['signin', 'signup', 'prefer']
   return checkRoutes.includes(route.name)
 })
 

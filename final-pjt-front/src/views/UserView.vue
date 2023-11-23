@@ -1,11 +1,14 @@
 <template>
-    <div class="w-screen h-screen bg-[url('@/assets/images/loginbg.jpg')] bg-cover">
-      <div class="w-screen h-screen bg-blue-950 bg-opacity-80 grid place-content-center">
+    <div class="w-screen min-h-screen bg-[url('@/assets/images/loginbg.jpg')] bg-cover">
+      <div class="w-screen min-h-screen bg-blue-950 bg-opacity-80 grid place-content-center">
         <div v-if="route.name === 'signin'">
           <SigninForm />
         </div>
         <div v-if="route.name === 'signup'">
           <SignupForm />
+        </div>
+        <div v-if="route.name === 'prefer'">
+          <MoviePreference />
         </div>
       </div>
     </div>
@@ -17,6 +20,7 @@ import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import SigninForm from '@/components/SigninForm.vue'
 import SignupForm from '@/components/SignupForm.vue'
+import MoviePreference from '@/components/MoviePreference.vue'
 
 const store = useUserStore()
 const router = useRouter()

@@ -6,8 +6,8 @@
           <img @click="goMain" src="@/assets/images/Logo.png" alt="logo" class="w-60 my-10 cursor-pointer">
         </div>
         <div class="w-96 m-4 flex flex-col">
-          <div class="basis-1/4">
-            <p>
+          <div class="basis-1/4 text-4xl">
+            <p class="my-auto">
               회원가입
             </p>
           </div>
@@ -67,7 +67,7 @@
 
 <script setup>
 import { useUserStore } from '@/stores/user'
-import axios from 'axios';
+import axios from 'axios'
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
