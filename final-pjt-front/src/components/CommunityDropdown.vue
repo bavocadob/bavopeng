@@ -9,19 +9,35 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 import axios from 'axios';
 
+const store = useUserStore()
 const route = useRoute();
 const router = useRouter();
-const articleId = ref(route.params.id);
+const articleId = ref(route.params.articleId);
 
 const editArticle = (article) => {
   // router.push({ name: 'CommunityEdit', params: { article } });
 };
 
 const deleteArticle = function() {
-
+  axios({
+    method : 'DELETE',
+    url : `${store.API_URL}/api/v1/article/${articleId.value}/`,
+    headers : {
+      Authorization : `token ${store.token}`
+    }
+  })
+  .then((res) => {
+    router.push({
+      name: 'community'
+    })
+  })
+  .catch((err) => {
+    console.log(err)
+  })
 }
 </script>
 

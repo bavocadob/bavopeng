@@ -19,7 +19,7 @@ API_KEY = settings.API_KEY
 @api_view(['GET'])
 def movie_detail(request, movie_pk):
     movie = get_object_or_404(Movie, pk=movie_pk)
-    serializer = MovieSerializer(movie)
+    serializer = MovieSerializer(movie, context={'request': request})
     return Response(serializer.data)
 
 
@@ -43,7 +43,7 @@ def movie_review(request, movie_pk):
 def movie_search(request, query):
     query_no_space = query.replace(' ', '')
     movies = Movie.objects.all().order_by('-rating_cnt')
-    filtered_movies = list(filter(lambda movie: query_no_space.lower() in movie.title.lower().replace(' ', '') or query_no_space.lower() in movie.original_title.lower().replace(' ', ''), movies))[:10]
+    filtered_movies = list(filter(lambda movie: query_no_space.lower() in movie.title.lower().replace(' ', '') or query_no_space.lower() in movie.original_title.lower().replace(' ', ''), movies))[:25]
     serializer = MovieListSerializer(filtered_movies, many=True)
     return Response(serializer.data)
 
@@ -51,9 +51,10 @@ def movie_search(request, query):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def movie_like(request, movie_pk):
+    
     movie = get_object_or_404(Movie, pk=movie_pk)
     user = request.user
-    
+
     if request.method == 'POST':
         if movie.liked_by.filter(pk=user.pk).exists():
             movie.liked_by.remove(user)
@@ -61,7 +62,14 @@ def movie_like(request, movie_pk):
             if movie.disliked_by.filter(pk=user.pk).exists():
                 movie.disliked_by.remove(user)
             movie.liked_by.add(user)
-        return Response(status=status.HTTP_200_OK)
+        
+        data = {
+            'is_like' : movie.liked_by.filter(pk=user.pk).exists(),
+            'like_cnt' : movie.liked_by.count(),
+            'is_dislike' : movie.disliked_by.filter(pk=user.pk).exists(),
+            'dislike_cnt' : movie.disliked_by.count(),
+        }
+        return Response(data, status=status.HTTP_200_OK)
 
             
 @api_view(['POST'])
@@ -73,9 +81,18 @@ def movie_dislike(request, movie_pk):
         if movie.disliked_by.filter(pk=user.pk).exists():
             movie.disliked_by.remove(user)
         else:
-            movie.liked_users.add(user)
-        return Response(status=status.HTTP_200_OK)            
+            if movie.liked_by.filter(pk=user.pk).exists():
+                movie.liked_by.remove(user)
+            movie.disliked_by.add(user)
 
+        data = {
+            'is_like' : movie.liked_by.filter(pk=user.pk).exists(),
+            'like_cnt' : movie.liked_by.count(),
+            'is_dislike' : movie.disliked_by.filter(pk=user.pk).exists(),
+            'dislike_cnt' : movie.disliked_by.count(),
+        }
+        return Response(data, status=status.HTTP_200_OK)            
+    
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -88,7 +105,11 @@ def movie_wish(request, movie_pk):
             movie.wished_by.remove(user)
         else:
             movie.wished_by.add(user)
-        return Response(status=status.HTTP_200_OK)
+        
+        data = {
+            'is_wish' : movie.wished_by.filter(pk=user.pk).exists()
+        }
+        return Response(data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])

@@ -106,7 +106,6 @@ const getArticles = function() {
     params: params,
   })
   .then((res) => {
-    console.log(res)
     articles.value = res.data.results
     pageData.value.maxPage = res.data.num_pages
   })

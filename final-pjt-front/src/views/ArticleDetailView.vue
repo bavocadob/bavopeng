@@ -48,6 +48,46 @@
             </div>
           </div>
           <div v-html="article.content" class="mb-6"></div>
+
+          <!-- 태그된 영화 -->
+          <div v-if="article.ref_movie != null" class="mb-5 mt-3">
+            <router-link
+              :to="{
+                name: 'movieDetail',
+                params: {
+                  movieId: article.ref_movie.id,
+                },
+              }"
+            >
+              <div
+                class="flex justify-between items-center p-3 mb-2 bg-gray-100 rounded-lg"
+              >
+                <div class="flex items-center">
+                  <img
+                    :src="`https://image.tmdb.org/t/p/original${article.ref_movie.poster_path}`"
+                    alt="poster"
+                    class="w-12 mr-3"
+                  >
+                  <div>
+                    <div class="text-base">{{ article.ref_movie.title }}</div>
+                    <div class="text-sm">{{ article.ref_movie.release_date?.slice(0, 4) }}</div>
+                    <div class="flex">
+                      <StarRating
+                        v-model="article.ref_movie.rating_avg"
+                        :disableClick="true"
+                        :starSize="14"
+                        :starColor="'#4263EB'"
+                        :numberOfStars="5"
+                      />
+                      <span class="text-sm ml-2">{{ Math.round(article.ref_movie.rating_avg * 10) / 10 }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+           </router-link>
+          </div> 
+          <!-- 태그된 영화 -->
+
           <div class="flex justify-center">
             <button
               class="bg-white border border-gray-200 flex items-center px-4 py-2 rounded mr-2"
@@ -64,7 +104,6 @@
               <span class="text-blue-600">{{ dislikeCnt }}</span>
             </button>
           </div>
-
 
         </div>
         <!-- 코멘트 -->
@@ -90,6 +129,7 @@ import { useRoute } from 'vue-router'
 import CommunityDropdown from '@/components/CommunityDropdown.vue'
 import CommentWrite from '@/components/CommentWrite.vue'
 import CommentList from '@/components/CommentList.vue'
+import StarRating from '@/components/StarRating.vue'
 
 const store = useUserStore()
 const route = useRoute()
@@ -99,7 +139,7 @@ const article = ref({})
 const likeCnt = ref(0)
 const dislikeCnt = ref(0)
 const commentCnt = ref(0)
-const isLike = ref(true)
+const isLike = ref(false)
 const isDislike = ref(false)
 const isDropdownOpen = ref(false)
 
@@ -107,16 +147,18 @@ const isDropdownOpen = ref(false)
 onMounted(() => {
   axios({
     method : 'GET',
-    url : `${store.API_URL}/api/v1/article/${route.params.articleId}`
+    url : `${store.API_URL}/api/v1/article/${route.params.articleId}`,
+    headers : {
+      Authorization : `token ${store.token}`
+    },
   })
   .then((res) => {
     article.value = res.data
     likeCnt.value = res.data.like_cnt
     dislikeCnt.value = res.data.dislike_cnt
     commentCnt.value = res.data.comment_cnt
-    // TODO: 밑에 두개 완성하기
-    // isLike.value
-    // isDislike.value
+    isLike.value = res.data.is_like
+    isDislike.value = res.data.is_dislike
   })
   .catch((err) => console.log(err))
 

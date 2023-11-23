@@ -46,13 +46,7 @@ const createComment = function() {
     }
   })
   .then((res) => {
-    console.log(res)
-    router.push({
-      name: 'articleDetail',
-      params: {
-        articleId: route.params.articleId
-      },
-    })
+    location.reload()
   })
   .catch((err) => console.log(err))
 
