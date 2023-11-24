@@ -34,7 +34,7 @@ class Command(BaseCommand):
                 is_active=True,
                 email=fake.email(),
             )
-            user.set_password('!admin1234')
+            user.set_password('qwer1234')
             user.save() 
             users.append(user)
             profile = Profile.objects.get(pk=user.pk)

@@ -1,7 +1,7 @@
 <template>
   <div class="border-b border-gray-400 pb-8 mb-8">
     <h2 class="text-lg font-bold mb-4">내가 작성한 리뷰</h2>
-    <ReviewCard v-if="review" :review="review" />
+    <ReviewCard v-if="review != null" :review="review" />
     <div v-else class="flex flex-col items-center justify-center h-64">
         <p class="mb-4 text-sm text-gray-500">아직 리뷰를 남기지 않으셨어요.</p>
         <p class="mb-4 text-sm text-gray-500">작품에 대한 감상을 기록해보세요!</p>
