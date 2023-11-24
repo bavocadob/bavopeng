@@ -34,7 +34,7 @@ const createArticle = function() {
     })
   } else {
     router.push({
-      name : 'loginView'
+      name : 'signin'
     })
   }
 }
