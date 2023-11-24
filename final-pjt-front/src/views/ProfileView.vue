@@ -11,7 +11,7 @@
             <div v-if="reviewsExists"  class="scroll-container h-[360px] snap-x">
               <ReviewCard @click="goMovie(review.movie)"
                 v-for="review in reviews" :key="review.id" :review="review"
-                class="border snap-center"
+                class="border snap-center cursor-pointer"
               />
             </div>
             <div v-else class="h-[360px]">

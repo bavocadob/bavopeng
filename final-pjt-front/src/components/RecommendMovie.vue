@@ -15,10 +15,11 @@
     <!-- 장르기반 -->
     <div v-if="genreRecommend" class="shadow-lg rounded p-4 text-white bg-gradient-to-br from-blue-950 to-blue-900">
       <div class="flex items-start justify-between">
-        <img @click="goDetail(genreRecommend.recommend.id)" 
+        <img v-if="genreRecommend.recommend.poster_path" @click="goDetail(genreRecommend.recommend.id)" 
           :src="`https://image.tmdb.org/t/p/original${genreRecommend.recommend.poster_path}`" 
-          class="w-1/3 rounded cursor-pointer" 
-        />
+          class="w-1/3 rounded cursor-pointer" />
+        <img v-else @click="goDetail(genreRecommend.recommend.id)" src="@/assets/images/noPoster.png" alt="noposter"
+          class="w-1/3 rounded cursor-pointer" >
         <div class="ml-4 flex flex-col justify-between h-full">
           <div>
             <div class="flex items-center justify-between">
@@ -48,9 +49,11 @@
     <!-- 좋아요기반 -->
     <div v-if="likeRecommend" class="shadow-lg rounded p-4 text-white bg-gradient-to-br from-blue-950 to-blue-900">
       <div class="flex items-start justify-between">
-        <img @click="goDetail(likeRecommend.recommend.id)" 
+        <img v-if="likeRecommend.recommend.poster_path" @click="goDetail(likeRecommend.recommend.id)" 
           :src="`https://image.tmdb.org/t/p/original${likeRecommend.recommend.poster_path}`"
           class="w-1/3 rounded cursor-pointer" />
+        <img v-else @click="goDetail(likeRecommend.recommend.id)" src="@/assets/images/noPoster.png" alt="noposter"
+          class="w-1/3 rounded cursor-pointer" >
         <div class="ml-4 flex flex-col justify-between h-full">
           <div>
             <div class="flex items-center justify-between">
@@ -81,9 +84,11 @@
     <!-- 보고싶어요기반 -->
     <div v-if="wishRecommend" class="shadow-lg rounded p-4 text-white bg-gradient-to-br from-blue-950 to-blue-900">
       <div class="flex items-start justify-between">
-        <img @click="goDetail(wishRecommend.recommend.id)"
+        <img v-if="wishRecommend.recommend.poster_path" @click="goDetail(wishRecommend.recommend.id)"
           :src="`https://image.tmdb.org/t/p/original${wishRecommend.recommend.poster_path}`"
           class="w-1/3 rounded cursor-pointer" />
+        <img v-else @click="goDetail(wishRecommend.recommend.id)" src="@/assets/images/noPoster.png" alt="noposter"
+          class="w-1/3 rounded cursor-pointer" >
         <div class="ml-4 flex flex-col justify-between h-full">
           <div>
             <div class="flex items-center justify-between">
