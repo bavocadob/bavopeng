@@ -209,8 +209,8 @@ watchEffect(() => {
   isWish.value = movie.value.is_wish
 })
 
-
 const myReview = computed(() => {
+  console.log(movie.value.review_set?.find(review => review.user.id === store.userInfo.id))
   return movie.value.review_set?.find(review => review.user.id === store.userInfo.id);
 })
 
@@ -228,6 +228,7 @@ const getReivews = function() {
     reviews.value = res.data.results
     pageData.value.maxPage = res.data.num_pages
     pageData.value.currentPage = res.data.current_page
+    // console.log(reviews.value)
   })
   .catch((err) => console.log(err)) 
 }
@@ -255,6 +256,7 @@ const updateMovieData = function() {
     movie.value = res.data
     likeCnt.value = res.data.like_cnt
     dislikeCnt.value = res.data.dislike_cnt
+    // console.log(movie.value)
   })
   .catch((err) => console.log(err))
 

@@ -29,7 +29,8 @@
             <div class="">
               <h2 v-if="route.name === 'profile'" class="text-4xl font-bold">{{ nickname }}</h2>
               <div v-else>
-                <input v-model="nickname" @input="ExistsNickname"
+                <p>{{ nickname.length }} / 10 자</p>
+                <input v-model="nickname" @input="ExistsNickname" maxlength="10"
                   class="w-64 text-xl border-2 text-black border-slate-400 rounded-md px-4 py-2 focus:outline-indigo-500"
                   :class="{'border-pink-500 text-pink-600 focus:outline-pink-500 focus:ring-pink-500':!isValidNickname}"
                 >

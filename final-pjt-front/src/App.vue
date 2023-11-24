@@ -21,7 +21,7 @@
             <div v-if="store.isLogin" @click="profielDropdown=!profielDropdown" class="relative">
               <div>
                 <img v-if="profileImg" class="w-10 h-10 rounded-full bg-slate-50" :src="profileUrl" />
-                <img v-else class="w-10 h-10 rounded-full bg-slate-50" src="./assets/images/anonymous_square.png" />
+                <img v-else class="w-10 h-10 rounded-full bg-slate-50 outline outline-offset-4 outline-2 outline-indigo-600 cursor-pointer" src="./assets/images/anonymous_square.png" />
               </div>
               <div v-show="profielDropdown" class="absolute right-0 top-14">
                 <UserProfileDropdown />

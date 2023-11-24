@@ -1,6 +1,12 @@
 <template>
 <!-- <h1>영화 목록</h1> -->
 <h2 class="text-3xl text-slate-100 ms-8 mb-4 font-semibold">
+  이 영화는 어때요?
+</h2>
+<div class="bg-indigo-800 mt-4 mb-8 p-6 text-white rounded-lg">
+  <RecommendMovie />
+</div>
+<h2 class="text-3xl text-slate-100 ms-8 mb-4 font-semibold">
   현재 상영중인 영화
 </h2>
 <div class="bg-indigo-800 mt-4 mb-8 p-6 text-white rounded-lg">
@@ -15,6 +21,7 @@
 </template>
 
 <script setup>
+import RecommendMovie from '@/components/RecommendMovie.vue'
 import MovieSwiper from '@/components/MovieSwiper.vue'
 import axios from 'axios'
 import { ref, onMounted } from 'vue'

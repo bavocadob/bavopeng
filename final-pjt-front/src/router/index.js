@@ -30,11 +30,11 @@ const router = createRouter({
       name: 'signin',
       component: UserView
     },
-    // {
-    //   path: '/movie',
-    //   name: 'movieView',
-    //   component: MovieView
-    // },
+    {
+      path: '/movie',
+      name: 'movieView',
+      component: MainView
+    },
     {
       path: '/article/create',
       name: 'articleCreate',
