@@ -26,11 +26,11 @@ class Command(BaseCommand):
         
         for movie in movies:
             if movie.review_set.count():
-                for i in range(random.randint(0, 30)):
+                for i in range(random.randint(0, 20)):
                     user = random.choice(users)
                     if not movie.liked_by.filter(pk=user.pk).exists() and not movie.disliked_by.filter(pk=user.pk).exists():
                         movie.liked_by.add(user)
-                for i in range(random.randint(0, 30)):
+                for i in range(random.randint(0, 13)):
                     user = random.choice(users)
                     if not movie.liked_by.filter(pk=user.pk).exists() and not movie.disliked_by.filter(pk=user.pk).exists():
                         movie.disliked_by.add(user)
