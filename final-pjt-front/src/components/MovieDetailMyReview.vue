@@ -12,9 +12,11 @@
 
 <script setup>
 import ReviewCard from '@/components/ReviewCard.vue'
-
-
+import { useUserStore } from '@/stores/user'
+import { useRouter } from 'vue-router';
+const store = useUserStore()
 const emit = defineEmits(['openModal'])
+const router = useRouter()
 
 const props = defineProps({
   review: {
@@ -31,8 +33,14 @@ const formatDate = (dateStr) => {
   return `${year}-${month}-${day}`
 }
 
-const openModal = function() {
-  emit('openModal')
+const openModal = function() {  
+  if (store.token) {
+    emit('openModal')
+  } else {
+    router.push({
+      name : 'signin'
+    })
+  }
 }
 
 </script>
