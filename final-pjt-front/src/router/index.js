@@ -35,11 +35,11 @@ const router = createRouter({
       component: UserView,
       meta: { notRequiresAuth: true }
     },
-    // {
-    //   path: '/movie',
-    //   name: 'movieView',
-    //   component: MovieView
-    // },
+    {
+      path: '/movie',
+      name: 'movieView',
+      component: MainView
+    },
     {
       path: '/article/create',
       name: 'articleCreate',

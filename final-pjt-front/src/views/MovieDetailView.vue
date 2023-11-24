@@ -263,6 +263,7 @@ const updateMovieData = function() {
     movie.value = res.data
     likeCnt.value = res.data.like_cnt
     dislikeCnt.value = res.data.dislike_cnt
+    // console.log(movie.value)
   })
   .catch((err) => console.log(err))
 

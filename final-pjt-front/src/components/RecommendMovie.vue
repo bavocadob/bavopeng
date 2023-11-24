@@ -1,11 +1,23 @@
 <template>
-  <div class="grid m-3 p-4 rounded-lg lg:grid-cols-3 gap-4">
+  <div v-if="!store.isLogin">
+    <div class="shadow-lg rounded p-4 text-white bg-gradient-to-br from-blue-950 to-blue-900 flex flex-col items-center justify-center text-center">
+      <i class="fas fa-film text-gray-400 text-6xl mb-4"></i>
+      <h2 class="text-lg text-blue-200 mb-4">로그인 후 영화를 추천받아 보세요!</h2>
+      <router-link
+          :to="{
+            name: 'signin',
+          }" 
+          class="bg-blue-950 text-white rounded px-4 py-2 hover:bg-blue-800">로그인 하러 가기
+      </router-link>
+    </div>
+  </div>
+  <div v-else class="grid m-3 p-4 rounded-lg lg:grid-cols-3 gap-4">
     <!-- 장르기반 -->
     <div v-if="genreRecommend" class="shadow-lg rounded p-4 text-white bg-gradient-to-br from-blue-950 to-blue-900">
       <div class="flex items-start justify-between">
-        <img 
+        <img @click="goDetail(genreRecommend.recommend.id)" 
           :src="`https://image.tmdb.org/t/p/original${genreRecommend.recommend.poster_path}`" 
-          class="w-1/3 rounded" 
+          class="w-1/3 rounded cursor-pointer" 
         />
         <div class="ml-4 flex flex-col justify-between h-full">
           <div>
@@ -18,7 +30,7 @@
             </div>
             <p class="text-blue-300 text-sm">{{ genreRecommend.recommend.release_date }}</p>
           </div>
-          <p class="mt-4 text-sm text-blue-100">{{ genreRecommend.target }} 장르를 좋아하신다면 이 영화도 추천드려요!</p>
+          <p class="mt-4 text-sm text-blue-100"><span class="font-bold text-base">{{ genreRecommend.target }}</span> 장르를 좋아하신다면 이 영화도 추천드려요!</p>
         </div>
       </div>
     </div>
@@ -29,16 +41,16 @@
           :to="{
             name: 'prefer',
           }" 
-          class="bg-blue-800 text-white rounded px-4 py-2 hover:bg-blue-900">영화 찾으러 가기
+          class="bg-blue-950 text-white rounded px-4 py-2 hover:bg-blue-800">영화 찾으러 가기
       </router-link>
     </div>
     <!-- 장르기반 -->
     <!-- 좋아요기반 -->
     <div v-if="likeRecommend" class="shadow-lg rounded p-4 text-white bg-gradient-to-br from-blue-950 to-blue-900">
       <div class="flex items-start justify-between">
-        <img 
+        <img @click="goDetail(likeRecommend.recommend.id)" 
           :src="`https://image.tmdb.org/t/p/original${likeRecommend.recommend.poster_path}`"
-          class="w-1/3 rounded" />
+          class="w-1/3 rounded cursor-pointer" />
         <div class="ml-4 flex flex-col justify-between h-full">
           <div>
             <div class="flex items-center justify-between">
@@ -50,7 +62,7 @@
             </div>
             <p class="text-blue-300 text-sm">{{ likeRecommend.recommend.release_date }}</p>
           </div>
-          <p class="mt-4 text-sm text-blue-100">{{ likeRecommend.target.title }} 영화를 좋아하신다면 이 영화는 어때요?</p>
+          <p class="mt-4 text-sm text-blue-100"><span class="font-bold text-base">{{ likeRecommend.target.title }}</span> 영화를 좋아하신다면 이 영화는 어때요?</p>
         </div>
       </div>
     </div>
@@ -61,7 +73,7 @@
           :to="{
             name: 'prefer',
           }" 
-          class="bg-blue-950 text-white rounded px-4 py-2 hover:bg-blue-1000">영화 찾으러 가기
+          class="bg-blue-950 text-white rounded px-4 py-2 hover:bg-blue-800">영화 찾으러 가기
       </router-link>
     </div>
     <!-- 좋아요기반 -->
@@ -69,9 +81,9 @@
     <!-- 보고싶어요기반 -->
     <div v-if="wishRecommend" class="shadow-lg rounded p-4 text-white bg-gradient-to-br from-blue-950 to-blue-900">
       <div class="flex items-start justify-between">
-        <img 
+        <img @click="goDetail(wishRecommend.recommend.id)"
           :src="`https://image.tmdb.org/t/p/original${wishRecommend.recommend.poster_path}`"
-          class="w-1/3 rounded" />
+          class="w-1/3 rounded cursor-pointer" />
         <div class="ml-4 flex flex-col justify-between h-full">
           <div>
             <div class="flex items-center justify-between">
@@ -83,19 +95,14 @@
             </div>
             <p class="text-blue-300 text-sm">{{ wishRecommend.recommend.release_date }}</p>
           </div>
-          <p class="mt-4 text-sm text-blue-100">{{ wishRecommend.target.title }} 영화를 보고 싶으시다면 이 영화도 관심 있으실거에요!</p>
+          <p class="mt-4 text-sm text-blue-100"><span class="font-bold text-base">{{ wishRecommend.target.title }}</span> 영화를 보고 싶으시다면 이 영화도 관심 있으실거에요!</p>
         </div>
       </div>
     </div>
     <div v-else="!wishRecommend" class="shadow-lg rounded p-4 text-white bg-gradient-to-br from-blue-950 to-blue-900 flex flex-col items-center justify-center text-center">
       <i class="fas fa-film text-gray-400 text-6xl mb-4"></i>
       <h2 class="text-lg text-blue-200 mb-4">아직 보고싶은 영화가 없으시군요?</h2>
-      <router-link
-          :to="{
-            name: 'prefer',
-          }" 
-          class="bg-blue-950 text-white rounded px-4 py-2 hover:bg-blue-1000">영화 찾으러 가기
-      </router-link>
+      <p class="text-lg text-blue-200 mb-4">보고싶은 영화를 담아보세요.</p>
     </div>
     <!-- 보고싶어요기반 -->
 
@@ -107,6 +114,7 @@
 import { useUserStore } from '@/stores/user'
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
+import router from '../router';
 
 const store = useUserStore()
 
@@ -174,6 +182,9 @@ const getWishRecommend = function() {
   })
 }
 
+const goDetail = function (movieId) {
+  router.push({name: 'movieDetail', params: {movieId: movieId}})
+}
 
 
 </script>
