@@ -20,7 +20,7 @@
         >
       <div class="flex items-center">
         <img v-if="review.user?.profile.profile_img"
-          :src="'http://127.0.0.1:8000'+review.user?.profile.profile_img"
+          :src="profileImg"
           class="w-8 h-8 rounded-full mr-4"
         />
         <img v-else
@@ -51,7 +51,7 @@
 
 <script setup>
 import StarRating from '@/components/StarRating.vue'
-import { watch, ref } from 'vue'
+import { watch, ref,computed } from 'vue'
 import { useUserStore } from '@/stores/user'
 import axios from 'axios'
 import ReviewDropdown from '@/components/ReviewDropdown.vue'
@@ -75,6 +75,15 @@ watch(
   }
 )
 
+const profileImg = computed(() => {
+  const baseUrl = 'http://127.0.0.1:8000';
+  const profile_img = props.review.user?.profile.profile_img
+  
+  if (profile_img && !profile_img.includes(baseUrl)) {
+    return `${baseUrl}${profile_img}`
+  }
+  return profile_img;
+})
 
 const formatDate = (dateStr) => {
   const date = new Date(dateStr)
