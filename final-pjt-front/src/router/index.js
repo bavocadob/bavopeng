@@ -11,6 +11,9 @@ import MovieReviewListView from '@/views/MovieReviewListView.vue'
 import ProfileView from '@/views/ProfileView.vue'
 import FollowView from '@/views/FollowView.vue'
 
+import { useUserStore } from '@/stores/user'
+
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,12 +26,14 @@ const router = createRouter({
     {
       path: '/signup',
       name: 'signup',
-      component: UserView
+      component: UserView,
+      meta: { notRequiresAuth: true }
     },
     {
       path: '/signin',
       name: 'signin',
-      component: UserView
+      component: UserView,
+      meta: { notRequiresAuth: true }
     },
     {
       path: '/movie',
@@ -38,12 +43,14 @@ const router = createRouter({
     {
       path: '/article/create',
       name: 'articleCreate',
-      component: ArticleCreateView
+      component: ArticleCreateView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/community/:articleId/edit',
       name: 'articleEdit',
-      component: ArticleEditView
+      component: ArticleEditView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/movie/:movieId',
@@ -68,17 +75,20 @@ const router = createRouter({
     {
       path: '/profile/:username',
       name: 'profile',
-      component: ProfileView
+      component: ProfileView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/profile/:username/modify',
       name: 'profileModify',
-      component: ProfileView
+      component: ProfileView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/prefer',
       name: 'prefer',
-      component: UserView
+      component: UserView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/follow/:id',
@@ -91,6 +101,34 @@ const router = createRouter({
       component: FollowView
     },
   ]
+})
+
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    const store = useUserStore()
+    // 로그인이 필요한 페이지에 로그인하지 않고 들어간 경우 로그인 페이지로 이동
+    if (store.token == null) {
+      next({
+        name: 'signin',
+      })
+    } else {
+      next()
+    }
+  } else if (to.matched.some(record => record.meta.notRequiresAuth)) {
+    const store = useUserStore()
+    if (store.token !== null) {
+      next({
+        name: 'main',
+      })
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
+
+
 })
 
 export default router

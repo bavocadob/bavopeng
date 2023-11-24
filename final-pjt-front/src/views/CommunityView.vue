@@ -4,7 +4,7 @@
       <div>
         <h1 class="text-4xl font-bold text-white">Community</h1>
         <p class="text-lg text-white mt-2">
-          지금부터 서로 죽여라
+          영화에 대한 글을 작성해보세요
         </p>
       </div>
   
@@ -34,7 +34,7 @@ const createArticle = function() {
     })
   } else {
     router.push({
-      name : 'loginView'
+      name : 'signin'
     })
   }
 }

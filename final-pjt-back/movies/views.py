@@ -160,6 +160,11 @@ def movie_review_pages(request, movie_pk, page):
 
     sort_field = sort_mapping.get(sort_by, '-liked_by__count')
     reviews = movie.review_set.annotate(liked_by__count=Count('liked_by')).order_by(sort_field)
+    user = request.user
+    my_review = None
+    if user and user.is_authenticated:
+        if movie.review_set.filter(user=user).exists():
+            my_review = ReviewSerializer(movie.review_set.get(user=user)).data
 
     paginator = Paginator(reviews, PAGE_SIZE)
 
@@ -176,7 +181,8 @@ def movie_review_pages(request, movie_pk, page):
         'count': paginator.count,
         'num_pages': paginator.num_pages,
         'current_page': min(page, paginator.num_pages),
-        'results': serializer.data
+        'results': serializer.data,
+        'my_review' : my_review
     })
 
 

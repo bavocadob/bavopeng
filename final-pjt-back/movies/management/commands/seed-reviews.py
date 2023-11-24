@@ -12,7 +12,7 @@ User = get_user_model()
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        with open('movies/fixtures/reviews.json', 'r', encoding='UTF8') as f:
+        with open('movies/fixtures/reviews_new.json', 'r', encoding='UTF8') as f:
             ratings = json.load(f)
 
         fake = Faker('ko-KR')

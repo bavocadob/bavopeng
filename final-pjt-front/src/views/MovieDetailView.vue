@@ -185,6 +185,7 @@ const movie = ref({})
 const sortOption = ref(0)
 const reviews = ref([])
 const reviewCnt = ref(0)
+const myReview = ref(null)
 
 const isLike = ref(false)
 const isDislike = ref(false)
@@ -209,26 +210,32 @@ watchEffect(() => {
   isWish.value = movie.value.is_wish
 })
 
-const myReview = computed(() => {
-  console.log(movie.value.review_set?.find(review => review.user.id === store.userInfo.id))
-  return movie.value.review_set?.find(review => review.user.id === store.userInfo.id);
-})
+
+
 
 
 const getReivews = function() {
+  const headers = {}
+  if (store.token) {
+    headers.Authorization = `token ${store.token}`;
+  }
+
   axios({
     method : 'GET',
     url : `${store.API_URL}/api/v1/movie/${movieId}/reviews/${pageData.value.currentPage}/`,
     params : {
       sort_by : sortOption.value
-    }
+    },
+    headers : headers,
   })
   .then((res) => {
     reviewCnt.value = res.data.count
     reviews.value = res.data.results
     pageData.value.maxPage = res.data.num_pages
     pageData.value.currentPage = res.data.current_page
-    // console.log(reviews.value)
+    if (res.data.my_review != null) {
+      myReview.value = res.data.my_review
+    }
   })
   .catch((err) => console.log(err)) 
 }
