@@ -20,7 +20,7 @@
             <MovieSearchBar />
             <div v-if="store.isLogin" @click="profielDropdown=!profielDropdown" class="relative">
               <div>
-                <img v-if="profileImg" class="w-10 h-10 rounded-full bg-slate-50" :src="profileUrl" />
+                <img v-if="profileImg" class="w-10 h-10 rounded-full bg-slate-50 outline outline-offset-4 outline-2 outline-indigo-600" :src="profileUrl" />
                 <img v-else class="w-10 h-10 rounded-full bg-slate-50 outline outline-offset-4 outline-2 outline-indigo-600 cursor-pointer" src="./assets/images/anonymous_square.png" />
               </div>
               <div v-show="profielDropdown" class="absolute right-0 top-14">
@@ -65,7 +65,24 @@
         <div :class="{'w-9/12 mx-auto py-28': !fullScreen}">
           <RouterView />
         </div>
-        <footer v-show="!fullScreen" class="w-screen h-20 absolute bottom-0 left-0 border border-black"></footer>
+        <!-- footer -->
+        <footer v-show="!fullScreen" 
+          class="w-screen flex justify-center items-center h-20 absolute bottom-0 left-0 
+            bg-slate-950 bg-opacity-80 text-gray-300 text-sm font-thin"
+        >
+          <img       
+            src="./assets/images/ssafylogo.png" alt="ssafylogo"
+            class="h-2/3 mx-20"
+          >
+          <div class="mx-20">
+            <p>ssafy 10기 관통 PJT</p>
+            <p>김해인, 강성은</p>
+          </div>
+          <img 
+            src="./assets/images/Logo.svg" alt="bavopeng"
+            class="h-2/3 mx-20"
+          >
+        </footer>
       </div>
       </div>
     </div>

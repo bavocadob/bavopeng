@@ -1,13 +1,13 @@
 <template>
   <div 
-    class="w-28 h-full bg-white border rounded-lg shadow-lg text-lg 
-      outline outline-1 outline-slate-400 outline-offset-1"
+    class="w-20 h-full bg-indigo-100 border rounded-lg shadow-lg text-sm font-semibold 
+      outline outline-2 outline-indigo-400 outline-offset-0 overflow-hidden"
   >
-    <a class="hover:bg-slate-200 p-4 block" :href="`http://localhost:5173/profile/${store.userInfo.username}`">
+    <a class="hover:bg-indigo-200 p-2 block" :href="`http://localhost:5173/profile/${store.userInfo.username}`">
       내 프로필
     </a>
     <div 
-      @click="logout" class="hover:bg-slate-200 hover:cursor-pointer p-4"
+      @click="logout" class="hover:bg-indigo-200 hover:cursor-pointer p-2"
     >
       로그아웃
     </div>
