@@ -1,6 +1,6 @@
 <template>
 <div class="mb-6 p-4 bg-white shadow rounded relative">
-  <div v-if="store.userInfo?.id === review.user?.id" class="absolute top-16 right-4 cursor-pointer">
+  <div v-if="store.userInfo?.id === review.user?.id && route.name !== 'profile'" class="absolute top-16 right-4 cursor-pointer">
         <i @click="isDropdownOpen = !isDropdownOpen" class="fas fa-ellipsis-v"></i>
         <ReviewDropdown
           v-if="isDropdownOpen"
@@ -8,7 +8,6 @@
           :review="review"
         />
   </div>
-  <!-- 여기 수정 필요할지도.. -->
   <div class="flex justify-between items-center mb-2">
     <router-link
           :to="{
@@ -52,10 +51,12 @@
 <script setup>
 import StarRating from '@/components/StarRating.vue'
 import { watch, ref,computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import axios from 'axios'
 import ReviewDropdown from '@/components/ReviewDropdown.vue'
 
+const route = useRoute()
 
 const props = defineProps({
   review : {

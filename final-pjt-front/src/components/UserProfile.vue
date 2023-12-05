@@ -40,7 +40,7 @@
             <div class="">
               <button @click="follow"
                 v-if="store.userInfo.username !== route.params.username"
-                class="bg-slate-200 text-sm px-2 py-1.5 rounded-md"
+                class="bg-blue-800 text-gray-100 text-md font-semibold px-2 py-1.5 rounded-md"
               >&nbsp&nbsp{{ followBtn }}&nbsp&nbsp</button>
               <div v-else>
                 <button 
@@ -86,14 +86,16 @@
             <span>/250자</span>
           </div>
         </div>
-        <div v-if="route.name === 'profile'" class="p-4 border shadow-sm ">
-          <p class="break-words">{{ introduce }}</p>
-          <p v-if="!introduce" class="text-gray-400">
-            아직 소개가 없습니다.
-          </p>
-        </div>
+        <div v-if="route.name === 'profile'" class="pb-12 h-full">
+          <div  class="p-4 h-full border shadow-sm">
+            <div v-html="introduce"></div>
+            <p v-if="!introduce" class="text-gray-400">
+              아직 소개가 없습니다.
+            </p>
+          </div>
+          </div>
         <div v-else>
-          <textarea rows="5" maxlength="250" v-model="introduce"
+          <textarea rows="6" maxlength="250" v-model="introduce"
             class="p-4 block w-full border border-gray-300 shadow-sm resize-none focus:outline-none
             focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" 
           ></textarea>
@@ -133,7 +135,7 @@ watch(() => props.profileInfo, (newProfile) => {
     profileUrl.value = null
   }
   nickname.value = newProfile.nickname
-  introduce.value = newProfile.introduce
+  introduce.value = newProfile.introduce.replace(/(?:\r\n|\r|\n)/g, '<br>')
   followingsCnt.value = newProfile.followingsCnt
   followersCnt.value = newProfile.followersCnt
   isFollowing.value = newProfile.isFollowing
@@ -144,7 +146,7 @@ watch(introduce, (newValue) => {
 })
 
 const followBtn = computed(() => {
-  return isFollowing.value ? '언팔로우' : '팔로우'
+  return isFollowing.value ? '팔로우 취소' : '팔로우'
 })
 
 const genreExists = computed(() => {
@@ -237,9 +239,7 @@ onBeforeRouteLeave((to, from) =>  {
   // console.log(from)
   if (from.name === 'profileModify') {
     const answer = window.confirm('저장하시겠습니까?')
-    if (answer === false) {
-      return false
-    } else {
+    if (answer === true) {
       upload()
     }
   }

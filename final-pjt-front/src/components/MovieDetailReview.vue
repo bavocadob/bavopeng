@@ -11,6 +11,7 @@
       :searchable="false"
       :showLabels="false"
       :optionHeight="10"
+      class="mb-2"
     />
 
     <ReviewCard v-if="reviews?.length" v-for="review in reviews" :key="review.id" :review="review" />
