@@ -1,53 +1,72 @@
 <template>
     <div class="mx-auto">
-      <h1 class="text-4xl font-semibold text-white">프로필</h1>
-      <div class="my-8 p-8 h-full bg-gray-200 grid grid-cols-12 gap-2 rounded-lg">
-        <div class="my-14 max-lg:my-4 bg-white shadow-md col-span-8 max-lg:col-span-12">
+
+      <h1 v-if="route.params.username === store.userInfo.username" class="text-4xl font-semibold text-white">내 프로필</h1>
+      <h1 v-else class="text-4xl font-semibold text-white">프로필</h1>
+
+      <div class="my-8 px-8 h-full bg-gray-200 grid grid-cols-12 gap-4 rounded-lg">
+        <div class="my-10 max-lg:mb-4 bg-white shadow-md col-span-8 max-lg:col-span-12">
           <UserProfile :profileInfo="profileInfo" />
         </div>
-        <div class="my-14 max-lg:my-4 px-2 bg-white shadow-md col-span-4 flex flex-col justify-center max-lg:col-span-12">
+
+
+        <div class="my-10 max-lg:mt-4 px-2 bg-white shadow-md col-span-4 flex flex-col justify-center max-lg:col-span-12">
           <span class="my-4 mx-2 font-semibold">최근 리뷰</span>
           <div class="p-2">
-            <div v-if="reviewsExists"  class="scroll-container h-[360px] snap-x">
+            <div v-if="reviewsExists"  class="overflow-y-auto h-[350px]">
               <ReviewCard @click="goMovie(review.movie)"
                 v-for="review in reviews" :key="review.id" :review="review"
                 class="border snap-center cursor-pointer"
               />
             </div>
+
             <div v-else class="h-[360px]">
               <p class="mt-20 text-center text-sm text-gray-500">아직 작성한 리뷰가 없어요.</p>
             </div>
           </div>
         </div>
       </div>
-      <div class="my-14 pt-4 h-full bg-gray-200 flex flex-col items-center rounded-lg">
-        <div class="my-8 w-full border-b border-gray-400 pb-6 px-6">
+
+
+      <div class="my-14 px-2 h-full bg-gray-200 flex flex-col items-center rounded-lg">
+        <div class="mt-4 mb-2 w-full border-b border-gray-400 pb-6 px-6">
           <h2 class="text-2xl my-4 text-center font-semibold">좋아하는 영화</h2>
+
           <div v-if="likedMovieExists" class="bg-blue-950 rounded-lg">
             <div class="my-18 bg-black bg-opacity-50 p-8 rounded-lg shadow-md">
               <MovieSwiper :movies="likeMovies" />
             </div>
           </div>
+
           <div v-else class="flex flex-col items-center justify-center h-64">
             <p class="mb-4 text-sm text-gray-500">아직 좋아요한 영화가 없어요.</p>
-            <p class="mb-4 text-sm text-gray-500">작품에 대한 감상을 기록해보세요!</p>
-            <button @click="goMain" class="px-4 py-2 bg-blue-900 font-medium text-white rounded">영화 찾아보기</button>
+            <div v-if="route.params.username === store.userInfo.username" class="flex flex-col items-center">
+              <p class="mb-4 text-sm text-gray-500">작품에 대한 감상을 기록해보세요!</p>
+              <button @click="goMain" class="px-4 py-2 bg-blue-900 font-medium text-white rounded">영화 찾아보기</button>
+            </div>
           </div>
         </div>
+
+
         <div class="mb-8 w-full px-6">
           <h2 class="text-2xl my-4 text-center font-semibold">보고싶은 영화</h2>
+
           <div v-if="wishedMovieExists" class="bg-blue-950 rounded-lg">
             <div class="my-18 bg-black bg-opacity-50 p-8 rounded-lg shadow-md">
               <MovieSwiper :movies="wishMovies" />
             </div>
           </div>
+
           <div v-else class="flex flex-col items-center justify-center h-64">
             <p class="mb-4 text-sm text-gray-500">아직 보고싶은 영화를 기록하지 않으셨어요.</p>
-            <p class="mb-4 text-sm text-gray-500">작품에 대한 감상을 기록해보세요!</p>
-            <button @click="goMain" class="px-4 py-2 bg-blue-900 font-medium text-white rounded">영화 찾아보기</button>
+            <div v-if="route.params.username === store.userInfo.username" class="flex flex-col items-center">
+              <p class="mb-4 text-sm text-gray-500">작품에 대한 감상을 기록해보세요!</p>
+              <button @click="goMain" class="px-4 py-2 bg-blue-900 font-medium text-white rounded">영화 찾아보기</button>
+            </div>
           </div>
         </div>
       </div>
+
     </div>
 </template>
 

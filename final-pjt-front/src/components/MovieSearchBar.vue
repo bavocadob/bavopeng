@@ -42,7 +42,6 @@ const searchMovie = debounce(function(event) {
       'url' : `${store.API_URL}/api/v1/movie/search/${searchTerm.value}`,
     })
     .then((res) => {
-      console.log(res)
       searchResults.value = res.data
     })
     .catch((err) => console.log(err))

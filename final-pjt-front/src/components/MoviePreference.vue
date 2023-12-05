@@ -42,13 +42,19 @@ const likeCount = ref(0)
 axios({
     method: 'get',
     url: 'http://127.0.0.1:8000/api/v1/movie/simple/',
+    headers: {
+      Authorization: `Token ${store.token}`
+    },
     params: {
       'id': movieList
     }
   })
     .then((res) => {
-      // console.log(res)
       movies.value = res.data
+      movies.value.forEach(movie => {
+        if (movie.is_like) {
+          likeCount.value += 1
+        }})
     })
     .catch((err) => {
       console.log(err)
@@ -63,9 +69,7 @@ const likeMovie = function (id) {
     }
   })
     .then((res) => {
-      console.log(res.data.movie_id)
       const targetMovie = movies.value.find(movie => movie.id === res.data.movie_id)
-      // console.log(targetMovie)
       targetMovie.is_like = !targetMovie.is_like
       if (targetMovie.is_like) {
         likeCount.value += 1
